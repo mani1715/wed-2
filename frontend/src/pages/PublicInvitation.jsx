@@ -345,8 +345,23 @@ const PublicInvitation = () => {
 
         {/* Greetings Section */}
         {invitation.sections_enabled.greetings && (
-          <Card className="p-8 mb-8 bg-white/80 backdrop-blur">
-            <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+          <Card 
+            className="p-8 mb-8"
+            style={{
+              background: 'var(--color-card, #FFFDF7)',
+              boxShadow: 'var(--card-shadow, 0 4px 12px rgba(139, 115, 85, 0.15))',
+              border: 'var(--card-border, 1px solid #E8D9C5)',
+              borderRadius: 'var(--card-radius, 12px)',
+              marginBottom: 'var(--spacing-card, 1.5rem)'
+            }}
+          >
+            <h3 
+              className="text-2xl font-semibold mb-6 text-center"
+              style={{ 
+                fontFamily: 'var(--font-heading, "Cinzel", serif)',
+                color: 'var(--color-primary, #8B7355)'
+              }}
+            >
               Send Your Blessings
             </h3>
 
@@ -354,7 +369,10 @@ const PublicInvitation = () => {
             <form onSubmit={handleSubmitGreeting} className="mb-8">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label 
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: 'var(--color-text, #4A3728)' }}
+                  >
                     Your Name
                   </label>
                   <input
@@ -362,12 +380,20 @@ const PublicInvitation = () => {
                     value={guestName}
                     onChange={(e) => setGuestName(e.target.value)}
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
+                    className="w-full px-4 py-2 border rounded-md"
+                    style={{
+                      borderColor: 'var(--color-accent, #C9A961)',
+                      background: 'var(--color-background, #FFF8E7)',
+                      color: 'var(--color-text, #4A3728)'
+                    }}
                     placeholder="Enter your name"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label 
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: 'var(--color-text, #4A3728)' }}
+                  >
                     Your Message
                   </label>
                   <textarea
@@ -375,14 +401,23 @@ const PublicInvitation = () => {
                     onChange={(e) => setMessage(e.target.value)}
                     required
                     rows="4"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
+                    className="w-full px-4 py-2 border rounded-md"
+                    style={{
+                      borderColor: 'var(--color-accent, #C9A961)',
+                      background: 'var(--color-background, #FFF8E7)',
+                      color: 'var(--color-text, #4A3728)'
+                    }}
                     placeholder="Write your blessings..."
                   />
                 </div>
                 <Button
                   type="submit"
                   disabled={submitting}
-                  className="w-full bg-rose-500 hover:bg-rose-600 text-white"
+                  className="w-full text-white"
+                  style={{
+                    background: 'var(--color-primary, #8B7355)',
+                    opacity: submitting ? 0.6 : 1
+                  }}
                 >
                   <Send className="w-4 h-4 mr-2" />
                   {submitting ? 'Sending...' : 'Send Greeting'}
@@ -398,17 +433,38 @@ const PublicInvitation = () => {
             {/* Display Greetings */}
             {invitation.greetings.length > 0 && (
               <div>
-                <h4 className="text-lg font-semibold text-gray-800 mb-4">
+                <h4 
+                  className="text-lg font-semibold mb-4"
+                  style={{ color: 'var(--color-primary, #8B7355)' }}
+                >
                   Wishes from Loved Ones ({invitation.greetings.length})
                 </h4>
                 <div className="space-y-4 max-h-96 overflow-y-auto">
                   {invitation.greetings.map((greeting) => (
-                    <div key={greeting.id} className="bg-gray-50 rounded-lg p-4">
-                      <p className="font-semibold text-gray-800 mb-1">
+                    <div 
+                      key={greeting.id} 
+                      className="rounded-lg p-4"
+                      style={{
+                        background: 'var(--color-background, #FFF8E7)',
+                        border: 'var(--card-border, 1px solid #E8D9C5)'
+                      }}
+                    >
+                      <p 
+                        className="font-semibold mb-1"
+                        style={{ color: 'var(--color-primary, #8B7355)' }}
+                      >
                         {greeting.guest_name}
                       </p>
-                      <p className="text-gray-600 text-sm mb-2">{greeting.message}</p>
-                      <p className="text-xs text-gray-400">
+                      <p 
+                        className="text-sm mb-2"
+                        style={{ color: 'var(--color-text, #4A3728)' }}
+                      >
+                        {greeting.message}
+                      </p>
+                      <p 
+                        className="text-xs"
+                        style={{ color: 'var(--color-accent, #C9A961)' }}
+                      >
                         {new Date(greeting.created_at).toLocaleDateString()}
                       </p>
                     </div>
