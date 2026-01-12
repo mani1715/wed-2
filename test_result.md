@@ -191,6 +191,9 @@ backend:
         - working: true
         - agent: "testing"
         - comment: "✅ CRITICAL FIXES VERIFIED: Link expiry validation working correctly - active profiles load immediately after creation, expired/deleted profiles return 410 status. Multi-language arrays returned correctly in public API. No 'Link Expired' errors for newly created profiles."
+        - working: true
+        - agent: "testing"
+        - comment: "✅ TIMEZONE FIX VERIFIED: Comprehensive testing confirms timezone-aware datetime comparisons working perfectly. All newly created profiles have is_active=True by default and are immediately accessible. No 'Link Expired' errors for fresh profiles. All expiry options (1 day, 7 days, 30 days) work correctly. Guest greeting submission working without timezone issues. Critical timezone fix successfully implemented and tested."
 
   - task: "Admin Initialization"
     implemented: true
