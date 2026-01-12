@@ -123,7 +123,7 @@ export const InvitationContent = ({ design, deity }) => {
         {/* Event Details */}
         <section
           ref={(el) => (sectionsRef.current[1] = el)}
-          className="opacity-0 transition-all duration-700"
+          className="transition-all duration-700"
         >
           <Card className={`${config.cardBg} backdrop-blur-sm border-none shadow-xl p-8 md:p-12`}>
             <h2 className={`${config.font} text-3xl md:text-4xl font-semibold ${config.accent} text-center mb-8`}>
