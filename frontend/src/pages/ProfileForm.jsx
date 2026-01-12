@@ -301,20 +301,21 @@ const ProfileForm = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Language *
+                  Language(s) * (Select one or more)
                 </label>
-                <select
-                  name="language"
-                  value={formData.language}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                >
-                  <option value="english">English</option>
-                  <option value="telugu">Telugu</option>
-                  <option value="hindi">Hindi</option>
-                  <option value="tamil">Tamil</option>
-                </select>
+                <div className="grid grid-cols-2 gap-3">
+                  {['english', 'telugu', 'hindi', 'tamil'].map((lang) => (
+                    <label key={lang} className="flex items-center space-x-2 cursor-pointer p-2 border rounded hover:bg-gray-50">
+                      <input
+                        type="checkbox"
+                        checked={formData.language.includes(lang)}
+                        onChange={() => handleLanguageToggle(lang)}
+                        className="w-4 h-4 text-rose-600 border-gray-300 rounded focus:ring-rose-500"
+                      />
+                      <span className="text-sm text-gray-700 capitalize">{lang}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
             </div>
           </Card>
@@ -325,35 +326,52 @@ const ProfileForm = () => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Expiry Type *
+                  Expiry Duration *
                 </label>
                 <select
-                  name="link_expiry_type"
-                  value={formData.link_expiry_type}
-                  onChange={handleChange}
+                  value={getExpiryPreset()}
+                  onChange={handleExpiryPresetChange}
                   required
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
                 >
-                  <option value="permanent">Permanent</option>
-                  <option value="hours">Hours</option>
-                  <option value="days">Days</option>
+                  <option value="1day">1 Day</option>
+                  <option value="7days">7 Days</option>
+                  <option value="30days">30 Days (Default)</option>
+                  <option value="custom">Custom</option>
                 </select>
               </div>
 
-              {formData.link_expiry_type !== 'permanent' && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Duration ({formData.link_expiry_type}) *
-                  </label>
-                  <input
-                    type="number"
-                    name="link_expiry_value"
-                    value={formData.link_expiry_value}
-                    onChange={handleChange}
-                    required
-                    min="1"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                  />
+              {getExpiryPreset() === 'custom' && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Type *
+                    </label>
+                    <select
+                      name="link_expiry_type"
+                      value={formData.link_expiry_type}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
+                    >
+                      <option value="hours">Hours</option>
+                      <option value="days">Days</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Duration *
+                    </label>
+                    <input
+                      type="number"
+                      name="link_expiry_value"
+                      value={formData.link_expiry_value}
+                      onChange={handleChange}
+                      required
+                      min="1"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
+                    />
+                  </div>
                 </div>
               )}
             </div>
