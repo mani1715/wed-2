@@ -478,8 +478,14 @@ const PublicInvitation = () => {
         {/* Footer Section */}
         {invitation.sections_enabled.footer && (
           <div className="text-center py-8">
-            <Heart className="w-12 h-12 mx-auto text-rose-500 mb-4" />
-            <p className="text-gray-600 text-lg">
+            <Heart 
+              className="w-12 h-12 mx-auto mb-4" 
+              style={{ color: 'var(--color-secondary, #D4AF37)' }}
+            />
+            <p 
+              className="text-lg"
+              style={{ color: 'var(--color-text, #4A3728)' }}
+            >
               Your presence will make our day even more special
             </p>
           </div>
