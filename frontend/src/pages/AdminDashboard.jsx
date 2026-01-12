@@ -169,7 +169,7 @@ const AdminDashboard = () => {
                       {getExpiryInfo(profile)}
                     </div>
                     <div className="text-xs text-gray-500">
-                      Language: {profile.language}
+                      Language: {Array.isArray(profile.language) ? profile.language.join(', ') : profile.language}
                     </div>
                   </div>
 
