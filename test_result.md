@@ -134,6 +134,9 @@ backend:
         - working: true
         - agent: "testing"
         - comment: "✅ TESTED: All Pydantic models working correctly. Profile creation with all required fields successful. UUID generation, datetime handling, and data serialization working properly."
+        - working: true
+        - agent: "main"
+        - comment: "✅ UPDATED: Changed language field from string to List[str] for multi-language support. Default expiry changed to 30 days. ProfileCreate now defaults to link_expiry_type='days' with link_expiry_value=30."
 
   - task: "Admin CRUD APIs"
     implemented: true
@@ -141,7 +144,7 @@ backend:
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "NA"
         - agent: "main"
@@ -149,6 +152,9 @@ backend:
         - working: true
         - agent: "testing"
         - comment: "✅ TESTED: All CRUD operations working perfectly. Created profile with realistic data (Rajesh Kumar & Priya Sharma), retrieved all profiles, got single profile by ID, updated profile details (venue/language), and soft deleted profile. Unique slug generation working (rajesh-priya-wymwfj)."
+        - working: true
+        - agent: "main"
+        - comment: "✅ UPDATED: calculate_expiry_date function now defaults to 30 days if expiry_value not specified. Removed 'permanent' option. All profiles now have expiry dates. Multi-language support added."
 
   - task: "Media Management APIs"
     implemented: true
