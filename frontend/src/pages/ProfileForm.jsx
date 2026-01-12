@@ -23,9 +23,9 @@ const ProfileForm = () => {
     event_type: 'marriage',
     event_date: '',
     venue: '',
-    language: 'english',
-    link_expiry_type: 'permanent',
-    link_expiry_value: '',
+    language: ['english'],
+    link_expiry_type: 'days',
+    link_expiry_value: '30',
     sections_enabled: {
       opening: true,
       welcome: true,
@@ -37,6 +37,8 @@ const ProfileForm = () => {
       footer: true
     }
   });
+
+  const [savedProfile, setSavedProfile] = useState(null);
 
   useEffect(() => {
     if (!admin) {
@@ -79,6 +81,59 @@ const ProfileForm = () => {
     }));
   };
 
+  const handleLanguageToggle = (lang) => {
+    setFormData(prev => {
+      const currentLangs = prev.language;
+      const newLangs = currentLangs.includes(lang)
+        ? currentLangs.filter(l => l !== lang)
+        : [...currentLangs, lang];
+      
+      // Ensure at least one language is selected
+      return {
+        ...prev,
+        language: newLangs.length > 0 ? newLangs : currentLangs
+      };
+    });
+  };
+
+  const handleExpiryPresetChange = (e) => {
+    const preset = e.target.value;
+    if (preset === 'custom') {
+      setFormData(prev => ({
+        ...prev,
+        link_expiry_type: 'days',
+        link_expiry_value: ''
+      }));
+    } else if (preset === '1day') {
+      setFormData(prev => ({
+        ...prev,
+        link_expiry_type: 'days',
+        link_expiry_value: '1'
+      }));
+    } else if (preset === '7days') {
+      setFormData(prev => ({
+        ...prev,
+        link_expiry_type: 'days',
+        link_expiry_value: '7'
+      }));
+    } else if (preset === '30days') {
+      setFormData(prev => ({
+        ...prev,
+        link_expiry_type: 'days',
+        link_expiry_value: '30'
+      }));
+    }
+  };
+
+  const getExpiryPreset = () => {
+    if (formData.link_expiry_type === 'days') {
+      if (formData.link_expiry_value === '1' || formData.link_expiry_value === 1) return '1day';
+      if (formData.link_expiry_value === '7' || formData.link_expiry_value === 7) return '7days';
+      if (formData.link_expiry_value === '30' || formData.link_expiry_value === 30) return '30days';
+    }
+    return 'custom';
+  };
+
   const handleSectionToggle = (section) => {
     setFormData(prev => ({
       ...prev,
@@ -98,21 +153,48 @@ const ProfileForm = () => {
       const submitData = {
         ...formData,
         event_date: new Date(formData.event_date).toISOString(),
-        link_expiry_value: formData.link_expiry_value ? parseInt(formData.link_expiry_value) : null
+        link_expiry_value: formData.link_expiry_value ? parseInt(formData.link_expiry_value) : 30
       };
 
+      let response;
       if (isEdit) {
-        await axios.put(`${API_URL}/api/admin/profiles/${profileId}`, submitData);
+        response = await axios.put(`${API_URL}/api/admin/profiles/${profileId}`, submitData);
       } else {
-        await axios.post(`${API_URL}/api/admin/profiles`, submitData);
+        response = await axios.post(`${API_URL}/api/admin/profiles`, submitData);
       }
 
-      navigate('/admin/dashboard');
+      setSavedProfile(response.data);
+      
+      // Don't navigate immediately, show the generated link
+      if (!isEdit) {
+        alert('Profile created successfully! You can now preview the invitation or copy the link.');
+      } else {
+        alert('Profile updated successfully!');
+        navigate('/admin/dashboard');
+      }
     } catch (error) {
       console.error('Failed to save profile:', error);
       setError(error.response?.data?.detail || 'Failed to save profile');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePreview = () => {
+    const slug = savedProfile?.slug || (isEdit && formData.slug);
+    if (slug) {
+      window.open(`/invite/${slug}`, '_blank');
+    } else {
+      alert('Please save the profile first to generate a preview link.');
+    }
+  };
+
+  const handleCopyLink = () => {
+    const link = savedProfile?.invitation_link;
+    if (link) {
+      const fullLink = window.location.origin + link;
+      navigator.clipboard.writeText(fullLink);
+      alert('Link copied to clipboard!');
     }
   };
 
