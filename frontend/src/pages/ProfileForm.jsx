@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import axios from 'axios';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, Eye } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -443,6 +443,7 @@ const ProfileForm = () => {
                 onClick={handlePreview}
                 className="flex-1 bg-purple-500 hover:bg-purple-600 text-white py-3"
               >
+                <Eye className="w-4 h-4 mr-2" />
                 Preview Invitation
               </Button>
             )}
