@@ -64,7 +64,9 @@ export const InvitationContent = ({ design, deity }) => {
       bg: 'bg-cinematic-background',
       text: 'text-cinematic-text',
       accent: 'text-cinematic-accent',
-      cardBg: 'bg-slate-800/80',
+      cardBg: 'bg-slate-800/90',
+      cardText: 'text-gray-100',
+      cardAccent: 'text-amber-400',
       font: 'font-modern'
     },
     scroll: {
