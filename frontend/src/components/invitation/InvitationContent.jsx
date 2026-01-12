@@ -98,7 +98,7 @@ export const InvitationContent = ({ design, deity }) => {
         {/* Header Section */}
         <section
           ref={(el) => (sectionsRef.current[0] = el)}
-          className="text-center opacity-0 transition-all duration-700"
+          className="text-center transition-all duration-700"
         >
           <div className={`${config.font} mb-6`}>
             <div className={`text-sm md:text-base ${config.text} tracking-widest uppercase mb-4`}>
