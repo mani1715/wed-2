@@ -189,20 +189,20 @@ export const InvitationContent = ({ design, deity }) => {
         >
           <div className="grid md:grid-cols-2 gap-6">
             <Card className={`${config.cardBg} backdrop-blur-sm border-none shadow-xl p-8`}>
-              <h3 className={`${config.font} text-2xl font-semibold ${config.accent} mb-4 text-center`}>
+              <h3 className={`${config.font} text-2xl font-semibold ${cardAccentColor} mb-4 text-center`}>
                 Bride's Family
               </h3>
-              <div className={`${config.text} text-center space-y-2`}>
+              <div className={`${cardTextColor} text-center space-y-2`}>
                 <p className="font-semibold">Mr. Rajesh Kumar & Mrs. Lakshmi Kumar</p>
                 <p className="text-sm opacity-80">Parents of the Bride</p>
               </div>
             </Card>
 
             <Card className={`${config.cardBg} backdrop-blur-sm border-none shadow-xl p-8`}>
-              <h3 className={`${config.font} text-2xl font-semibold ${config.accent} mb-4 text-center`}>
+              <h3 className={`${config.font} text-2xl font-semibold ${cardAccentColor} mb-4 text-center`}>
                 Groom's Family
               </h3>
-              <div className={`${config.text} text-center space-y-2`}>
+              <div className={`${cardTextColor} text-center space-y-2`}>
                 <p className="font-semibold">Mr. Suresh Sharma & Mrs. Anita Sharma</p>
                 <p className="text-sm opacity-80">Parents of the Groom</p>
               </div>
