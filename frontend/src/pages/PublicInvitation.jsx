@@ -191,16 +191,39 @@ const PublicInvitation = () => {
 
         {/* Event Details Section */}
         {invitation.sections_enabled.events && (
-          <Card className="p-8 mb-8 bg-white/80 backdrop-blur">
-            <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+          <Card 
+            className="p-8 mb-8"
+            style={{
+              background: 'var(--color-card, #FFFDF7)',
+              boxShadow: 'var(--card-shadow, 0 4px 12px rgba(139, 115, 85, 0.15))',
+              border: 'var(--card-border, 1px solid #E8D9C5)',
+              borderRadius: 'var(--card-radius, 12px)',
+              marginBottom: 'var(--spacing-card, 1.5rem)'
+            }}
+          >
+            <h3 
+              className="text-2xl font-semibold mb-6 text-center"
+              style={{ 
+                fontFamily: 'var(--font-heading, "Cinzel", serif)',
+                color: 'var(--color-primary, #8B7355)'
+              }}
+            >
               Event Details
             </h3>
             <div className="space-y-4">
               <div className="flex items-start">
-                <Calendar className="w-6 h-6 text-rose-500 mr-4 mt-1" />
+                <Calendar 
+                  className="w-6 h-6 mr-4 mt-1" 
+                  style={{ color: 'var(--color-secondary, #D4AF37)' }} 
+                />
                 <div>
-                  <p className="font-semibold text-gray-800">Date & Time</p>
-                  <p className="text-gray-600">
+                  <p 
+                    className="font-semibold"
+                    style={{ color: 'var(--color-primary, #8B7355)' }}
+                  >
+                    Date & Time
+                  </p>
+                  <p style={{ color: 'var(--color-text, #4A3728)' }}>
                     {eventDate.toLocaleDateString('en-US', {
                       weekday: 'long',
                       year: 'numeric',
@@ -211,10 +234,23 @@ const PublicInvitation = () => {
                 </div>
               </div>
               <div className="flex items-start">
-                <MapPin className="w-6 h-6 text-rose-500 mr-4 mt-1" />
+                <MapPin 
+                  className="w-6 h-6 mr-4 mt-1" 
+                  style={{ color: 'var(--color-secondary, #D4AF37)' }} 
+                />
                 <div>
-                  <p className="font-semibold text-gray-800">Venue</p>
-                  <p className="text-gray-600 whitespace-pre-line">{invitation.venue}</p>
+                  <p 
+                    className="font-semibold"
+                    style={{ color: 'var(--color-primary, #8B7355)' }}
+                  >
+                    Venue
+                  </p>
+                  <p 
+                    className="whitespace-pre-line"
+                    style={{ color: 'var(--color-text, #4A3728)' }}
+                  >
+                    {invitation.venue}
+                  </p>
                 </div>
               </div>
             </div>
@@ -223,15 +259,37 @@ const PublicInvitation = () => {
 
         {/* Photos Section */}
         {invitation.sections_enabled.photos && invitation.media.length > 0 && (
-          <Card className="p-8 mb-8 bg-white/80 backdrop-blur">
-            <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+          <Card 
+            className="p-8 mb-8"
+            style={{
+              background: 'var(--color-card, #FFFDF7)',
+              boxShadow: 'var(--card-shadow, 0 4px 12px rgba(139, 115, 85, 0.15))',
+              border: 'var(--card-border, 1px solid #E8D9C5)',
+              borderRadius: 'var(--card-radius, 12px)',
+              marginBottom: 'var(--spacing-card, 1.5rem)'
+            }}
+          >
+            <h3 
+              className="text-2xl font-semibold mb-6 text-center"
+              style={{ 
+                fontFamily: 'var(--font-heading, "Cinzel", serif)',
+                color: 'var(--color-primary, #8B7355)'
+              }}
+            >
               Our Memories
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {invitation.media
                 .filter(m => m.media_type === 'photo')
                 .map((media) => (
-                  <div key={media.id} className="aspect-square rounded-lg overflow-hidden">
+                  <div 
+                    key={media.id} 
+                    className="aspect-square overflow-hidden"
+                    style={{
+                      border: 'var(--image-border, 4px solid #D4AF37)',
+                      borderRadius: 'var(--image-radius, 8px)'
+                    }}
+                  >
                     <img
                       src={media.media_url}
                       alt={media.caption || 'Wedding photo'}
@@ -245,11 +303,32 @@ const PublicInvitation = () => {
 
         {/* Video Section */}
         {invitation.sections_enabled.video && invitation.media.some(m => m.media_type === 'video') && (
-          <Card className="p-8 mb-8 bg-white/80 backdrop-blur">
-            <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+          <Card 
+            className="p-8 mb-8"
+            style={{
+              background: 'var(--color-card, #FFFDF7)',
+              boxShadow: 'var(--card-shadow, 0 4px 12px rgba(139, 115, 85, 0.15))',
+              border: 'var(--card-border, 1px solid #E8D9C5)',
+              borderRadius: 'var(--card-radius, 12px)',
+              marginBottom: 'var(--spacing-card, 1.5rem)'
+            }}
+          >
+            <h3 
+              className="text-2xl font-semibold mb-6 text-center"
+              style={{ 
+                fontFamily: 'var(--font-heading, "Cinzel", serif)',
+                color: 'var(--color-primary, #8B7355)'
+              }}
+            >
               Our Story
             </h3>
-            <div className="aspect-video rounded-lg overflow-hidden bg-gray-100">
+            <div 
+              className="aspect-video overflow-hidden bg-gray-100"
+              style={{
+                border: 'var(--image-border, 4px solid #D4AF37)',
+                borderRadius: 'var(--image-radius, 8px)'
+              }}
+            >
               {invitation.media
                 .filter(m => m.media_type === 'video')
                 .map((media) => (
