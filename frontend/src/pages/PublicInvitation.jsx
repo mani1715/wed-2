@@ -81,18 +81,18 @@ const PublicInvitation = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 to-pink-50 flex items-center justify-center">
-        <p className="text-gray-600">Loading invitation...</p>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-background, #FFF8E7)' }}>
+        <p style={{ color: 'var(--color-text, #4A3728)' }}>Loading invitation...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 to-pink-50 flex items-center justify-center p-4">
-        <Card className="p-8 max-w-md text-center">
+      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'var(--color-background, #FFF8E7)' }}>
+        <Card className="p-8 max-w-md text-center" style={{ background: 'var(--color-card, #FFFDF7)' }}>
           <p className="text-red-600 text-lg mb-4">{error}</p>
-          <p className="text-gray-600">Please contact the event organizer for assistance.</p>
+          <p style={{ color: 'var(--color-text, #4A3728)' }}>Please contact the event organizer for assistance.</p>
         </Card>
       </div>
     );
@@ -101,22 +101,50 @@ const PublicInvitation = () => {
   const eventDate = new Date(invitation.event_date);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50">
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
+    <div 
+      className="min-h-screen" 
+      style={{ 
+        background: 'var(--color-background, #FFF8E7)',
+        fontFamily: 'var(--font-body, "Lora", serif)',
+        color: 'var(--color-text, #4A3728)',
+        paddingTop: 'var(--spacing-section, 3rem)',
+        paddingBottom: 'var(--spacing-section, 3rem)'
+      }}
+    >
+      <div className="container mx-auto px-4 max-w-4xl">
         {/* Opening Section */}
         {invitation.sections_enabled.opening && (
-          <div className="text-center mb-16">
-            <Heart className="w-16 h-16 mx-auto text-rose-500 mb-6 animate-pulse" />
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-              Wedding Invitation
+          <div className="text-center" style={{ marginBottom: 'var(--spacing-section, 3rem)' }}>
+            <Heart 
+              className="w-16 h-16 mx-auto mb-6" 
+              style={{ color: 'var(--color-secondary, #D4AF37)' }} 
+            />
+            <h1 
+              className="text-4xl md:text-5xl font-bold mb-4"
+              style={{ 
+                fontFamily: 'var(--font-heading, "Cinzel", serif)',
+                color: 'var(--color-primary, #8B7355)'
+              }}
+            >
+              {invitation.event_type === 'marriage' ? 'Wedding Invitation' : 
+               invitation.event_type === 'engagement' ? 'Engagement Invitation' : 'Event Invitation'}
             </h1>
           </div>
         )}
 
         {/* Welcome Section */}
         {invitation.sections_enabled.welcome && (
-          <Card className="p-8 mb-8 text-center bg-white/80 backdrop-blur">
-            <p className="text-xl text-gray-700">
+          <Card 
+            className="p-8 mb-8 text-center"
+            style={{
+              background: 'var(--color-card, #FFFDF7)',
+              boxShadow: 'var(--card-shadow, 0 4px 12px rgba(139, 115, 85, 0.15))',
+              border: 'var(--card-border, 1px solid #E8D9C5)',
+              borderRadius: 'var(--card-radius, 12px)',
+              marginBottom: 'var(--spacing-card, 1.5rem)'
+            }}
+          >
+            <p className="text-xl" style={{ color: 'var(--color-text, #4A3728)' }}>
               With joy in our hearts, we invite you to celebrate
             </p>
           </Card>
@@ -124,13 +152,37 @@ const PublicInvitation = () => {
 
         {/* Couple Names Section */}
         {invitation.sections_enabled.couple && (
-          <Card className="p-12 mb-8 text-center bg-white/80 backdrop-blur">
+          <Card 
+            className="p-12 mb-8 text-center"
+            style={{
+              background: 'var(--color-card, #FFFDF7)',
+              boxShadow: 'var(--card-shadow, 0 4px 12px rgba(139, 115, 85, 0.15))',
+              border: 'var(--card-border, 1px solid #E8D9C5)',
+              borderRadius: 'var(--card-radius, 12px)',
+              marginBottom: 'var(--spacing-card, 1.5rem)'
+            }}
+          >
             <div className="space-y-6">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
+              <h2 
+                className="text-3xl md:text-4xl font-bold"
+                style={{ 
+                  fontFamily: 'var(--font-heading, "Cinzel", serif)',
+                  color: 'var(--color-primary, #8B7355)'
+                }}
+              >
                 {invitation.groom_name}
               </h2>
-              <Heart className="w-8 h-8 mx-auto text-rose-500" />
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
+              <Heart 
+                className="w-8 h-8 mx-auto" 
+                style={{ color: 'var(--color-secondary, #D4AF37)' }} 
+              />
+              <h2 
+                className="text-3xl md:text-4xl font-bold"
+                style={{ 
+                  fontFamily: 'var(--font-heading, "Cinzel", serif)',
+                  color: 'var(--color-primary, #8B7355)'
+                }}
+              >
                 {invitation.bride_name}
               </h2>
             </div>
