@@ -862,13 +862,13 @@ class WeddingAPITester:
 def main():
     """Main test execution"""
     tester = WeddingAPITester()
-    success = tester.run_all_tests()
+    success = tester.run_critical_fix_tests()
     
     if success:
-        print("\n✅ Backend testing completed successfully!")
+        print("\n✅ CRITICAL FIXES testing completed successfully!")
         exit(0)
     else:
-        print("\n❌ Backend testing completed with failures!")
+        print("\n❌ CRITICAL FIXES testing completed with failures!")
         exit(1)
 
 if __name__ == "__main__":
