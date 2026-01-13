@@ -181,8 +181,23 @@ const AdminDashboard = () => {
                       <Clock className="w-4 h-4 mr-2" />
                       {getExpiryInfo(profile)}
                     </div>
-                    <div className="text-xs text-gray-500">
-                      Language: {Array.isArray(profile.language) ? profile.language.join(', ') : profile.language}
+                    <div className="flex items-center text-xs">
+                      <Palette className="w-4 h-4 mr-2" />
+                      <span className="font-medium">{getDesignName(profile.design_id)}</span>
+                    </div>
+                    <div className="flex items-center text-xs">
+                      <Church className="w-4 h-4 mr-2" />
+                      <span>{getDeityName(profile.deity_id)}</span>
+                    </div>
+                    <div className="flex items-center text-xs">
+                      <Languages className="w-4 h-4 mr-2" />
+                      <span>
+                        {profile.enabled_languages 
+                          ? `${profile.enabled_languages.length} language${profile.enabled_languages.length > 1 ? 's' : ''}` 
+                          : Array.isArray(profile.language) 
+                            ? profile.language.join(', ') 
+                            : profile.language}
+                      </span>
                     </div>
                   </div>
 
