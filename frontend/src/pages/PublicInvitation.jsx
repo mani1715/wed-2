@@ -199,7 +199,7 @@ const PublicInvitation = () => {
             }}
           >
             <p className="text-xl" style={{ color: 'var(--color-text, #4A3728)' }}>
-              With joy in our hearts, we invite you to celebrate
+              {getT('welcome', 'message')}
             </p>
           </Card>
         )}
