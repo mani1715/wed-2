@@ -175,9 +175,14 @@ const PublicInvitation = () => {
                 color: 'var(--color-primary, #8B7355)'
               }}
             >
-              {invitation.event_type === 'marriage' ? 'Wedding Invitation' : 
-               invitation.event_type === 'engagement' ? 'Engagement Invitation' : 'Event Invitation'}
+              {getT('opening', 'title')}
             </h1>
+            <p 
+              className="text-lg"
+              style={{ color: 'var(--color-text, #4A3728)' }}
+            >
+              {getT('opening', 'subtitle')}
+            </p>
           </div>
         )}
 
