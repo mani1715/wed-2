@@ -162,10 +162,54 @@ class ProfileUpdate(BaseModel):
     venue: Optional[str] = None
     language: Optional[List[str]] = None
     design_id: Optional[str] = None
+    deity_id: Optional[str] = None
+    whatsapp_groom: Optional[str] = None
+    whatsapp_bride: Optional[str] = None
+    enabled_languages: Optional[List[str]] = None
+    custom_text: Optional[Dict[str, Dict[str, str]]] = None
     sections_enabled: Optional[SectionsEnabled] = None
     link_expiry_type: Optional[str] = None
     link_expiry_value: Optional[int] = None
     is_active: Optional[bool] = None
+    
+    @field_validator('whatsapp_groom', 'whatsapp_bride')
+    def validate_whatsapp_number(cls, v):
+        """Validate WhatsApp number is in E.164 format"""
+        if v is not None and v.strip():
+            pattern = r'^\+[1-9]\d{1,14}$'
+            if not re.match(pattern, v):
+                raise ValueError('WhatsApp number must be in E.164 format (e.g., +919876543210)')
+        return v
+    
+    @field_validator('design_id')
+    def validate_design_id(cls, v):
+        """Validate design_id is one of the allowed values"""
+        if v is not None:
+            allowed_designs = ['royal_classic', 'floral_soft', 'divine_temple', 'modern_minimal', 'cinematic_luxury']
+            if v not in allowed_designs:
+                raise ValueError(f'design_id must be one of: {", ".join(allowed_designs)}')
+        return v
+    
+    @field_validator('deity_id')
+    def validate_deity_id(cls, v):
+        """Validate deity_id is one of the allowed values"""
+        if v is not None and v != "":
+            allowed_deities = ['ganesha', 'venkateswara_padmavati', 'shiva_parvati', 'lakshmi_vishnu', 'none']
+            if v not in allowed_deities:
+                raise ValueError(f'deity_id must be one of: {", ".join(allowed_deities)} or null')
+        return v
+    
+    @field_validator('enabled_languages')
+    def validate_enabled_languages(cls, v):
+        """Validate at least one language is enabled"""
+        if v is not None:
+            if len(v) == 0:
+                raise ValueError('At least one language must be enabled')
+            allowed_languages = ['english', 'telugu', 'hindi']
+            for lang in v:
+                if lang not in allowed_languages:
+                    raise ValueError(f'Language must be one of: {", ".join(allowed_languages)}')
+        return v
 
 
 class ProfileResponse(BaseModel):
