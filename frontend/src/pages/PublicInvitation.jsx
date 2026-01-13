@@ -416,7 +416,7 @@ const PublicInvitation = () => {
                 color: 'var(--color-primary, #8B7355)'
               }}
             >
-              Send Your Blessings
+              {getT('greetings', 'title')}
             </h3>
 
             {/* Greeting Form */}
@@ -427,7 +427,7 @@ const PublicInvitation = () => {
                     className="block text-sm font-medium mb-2"
                     style={{ color: 'var(--color-text, #4A3728)' }}
                   >
-                    Your Name
+                    {getT('greetings', 'nameLabel')}
                   </label>
                   <input
                     type="text"
@@ -440,7 +440,7 @@ const PublicInvitation = () => {
                       background: 'var(--color-background, #FFF8E7)',
                       color: 'var(--color-text, #4A3728)'
                     }}
-                    placeholder="Enter your name"
+                    placeholder={getT('greetings', 'messagePlaceholder')}
                   />
                 </div>
                 <div>
@@ -461,7 +461,7 @@ const PublicInvitation = () => {
                       background: 'var(--color-background, #FFF8E7)',
                       color: 'var(--color-text, #4A3728)'
                     }}
-                    placeholder="Write your blessings..."
+                    placeholder={getT('greetings', 'messagePlaceholder')}
                   />
                 </div>
                 <Button
@@ -474,7 +474,7 @@ const PublicInvitation = () => {
                   }}
                 >
                   <Send className="w-4 h-4 mr-2" />
-                  {submitting ? 'Sending...' : 'Send Greeting'}
+                  {submitting ? 'Sending...' : getT('greetings', 'submitButton')}
                 </Button>
                 {submitSuccess && (
                   <p className="text-green-600 text-sm text-center">
