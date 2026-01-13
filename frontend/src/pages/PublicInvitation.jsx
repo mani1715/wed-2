@@ -356,11 +356,7 @@ const PublicInvitation = () => {
               {invitation.whatsapp_groom && (
                 <Button
                   onClick={() => window.open(generateWhatsAppURL(invitation.whatsapp_groom), '_blank')}
-                  className="flex items-center justify-center gap-2 px-6 py-3"
-                  style={{
-                    background: 'var(--color-secondary, #25D366)',
-                    color: '#FFFFFF'
-                  }}
+                  className="flex items-center justify-center gap-2 px-6 py-3 bg-[#25D366] hover:bg-[#20BA5A] text-white"
                 >
                   <MessageCircle className="w-5 h-5" />
                   {getT('whatsapp', 'groomButton')}
@@ -369,11 +365,7 @@ const PublicInvitation = () => {
               {invitation.whatsapp_bride && (
                 <Button
                   onClick={() => window.open(generateWhatsAppURL(invitation.whatsapp_bride), '_blank')}
-                  className="flex items-center justify-center gap-2 px-6 py-3"
-                  style={{
-                    background: 'var(--color-secondary, #25D366)',
-                    color: '#FFFFFF'
-                  }}
+                  className="flex items-center justify-center gap-2 px-6 py-3 bg-[#25D366] hover:bg-[#20BA5A] text-white"
                 >
                   <MessageCircle className="w-5 h-5" />
                   {getT('whatsapp', 'brideButton')}
