@@ -394,6 +394,11 @@ async def get_invitation(slug: str):
         venue=profile['venue'],
         language=profile['language'],
         design_id=profile['design_id'],
+        deity_id=profile.get('deity_id'),
+        whatsapp_groom=profile.get('whatsapp_groom'),
+        whatsapp_bride=profile.get('whatsapp_bride'),
+        enabled_languages=profile.get('enabled_languages', ['english']),
+        custom_text=profile.get('custom_text', {}),
         sections_enabled=SectionsEnabled(**profile['sections_enabled']),
         media=[ProfileMedia(**m) for m in media_list],
         greetings=[GreetingResponse(**g) for g in greetings_list]
