@@ -374,7 +374,7 @@ const PublicInvitation = () => {
                 color: 'var(--color-primary, #8B7355)'
               }}
             >
-              Our Story
+              {getT('video', 'title')}
             </h3>
             <div 
               className="aspect-video overflow-hidden bg-gray-100"
