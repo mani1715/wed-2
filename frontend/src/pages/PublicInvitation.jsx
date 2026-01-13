@@ -115,6 +115,20 @@ const PublicInvitation = () => {
   const getT = (section, key) => getText(selectedLanguage, section, key, customText);
   const getSectionT = (section) => getSectionText(selectedLanguage, section, customText);
 
+  // Generate WhatsApp URL with pre-filled message
+  const generateWhatsAppURL = (phoneNumber) => {
+    if (!phoneNumber) return null;
+    
+    // Get default message in selected language
+    const defaultMessage = getT('whatsapp', 'defaultMessage');
+    
+    // Encode message for URL
+    const encodedMessage = encodeURIComponent(defaultMessage);
+    
+    // Generate wa.me URL
+    return `https://wa.me/${phoneNumber.replace(/[^0-9]/g, '')}?text=${encodedMessage}`;
+  };
+
   return (
     <div 
       className="min-h-screen" 
