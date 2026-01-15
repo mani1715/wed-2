@@ -681,6 +681,7 @@ const PublicInvitation = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 
