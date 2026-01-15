@@ -126,7 +126,7 @@ backend:
     file: "/app/backend/models.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "NA"
         - agent: "main"
@@ -149,6 +149,9 @@ backend:
         - working: true
         - agent: "testing"
         - comment: "✅ COMPREHENSIVE DESIGN SYSTEM RE-TESTING COMPLETE: All review request requirements verified (5/5 tests passed). TEST 1: Profile creation without design_id defaults to 'temple_divine' ✅. TEST 2: Profile creation with all 8 specific design IDs works perfectly ✅. TEST 3: Profile design update from temple_divine to cinematic_luxury successful ✅. TEST 4: GET profile by ID and GET all profiles both include design_id in responses ✅. TEST 5: Public invitation API (/api/invite/:slug) returns design_id correctly ✅. Admin credentials (admin@wedding.com/admin123) working. All backend APIs properly handle design_id field in CRUD operations. Design system is production-ready and fully functional."
+        - working: "NA"
+        - agent: "main"
+        - comment: "✅ PHASE 3 - DEITY_ID FIELD VERIFIED: Backend models already include deity_id field (Optional[str] = None). Field present in Profile, ProfileCreate, ProfileUpdate, ProfileResponse, and InvitationPublicView models. Validation implemented for allowed values: ganesha, venkateswara_padmavati, shiva_parvati, lakshmi_vishnu, none, or null. No backend changes needed - deity_id field already production-ready."
 
   - task: "Admin CRUD APIs"
     implemented: true
