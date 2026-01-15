@@ -92,7 +92,7 @@ class Profile(BaseModel):
         """Validate at least one language is enabled"""
         if not v or len(v) == 0:
             raise ValueError('At least one language must be enabled')
-        allowed_languages = ['english', 'telugu', 'hindi']
+        allowed_languages = ['english', 'telugu', 'hindi', 'tamil', 'kannada', 'malayalam']
         for lang in v:
             if lang not in allowed_languages:
                 raise ValueError(f'Language must be one of: {", ".join(allowed_languages)}')
@@ -147,7 +147,7 @@ class ProfileCreate(BaseModel):
         """Validate at least one language is enabled"""
         if not v or len(v) == 0:
             raise ValueError('At least one language must be enabled')
-        allowed_languages = ['english', 'telugu', 'hindi']
+        allowed_languages = ['english', 'telugu', 'hindi', 'tamil', 'kannada', 'malayalam']
         for lang in v:
             if lang not in allowed_languages:
                 raise ValueError(f'Language must be one of: {", ".join(allowed_languages)}')
@@ -205,7 +205,7 @@ class ProfileUpdate(BaseModel):
         if v is not None:
             if len(v) == 0:
                 raise ValueError('At least one language must be enabled')
-            allowed_languages = ['english', 'telugu', 'hindi']
+            allowed_languages = ['english', 'telugu', 'hindi', 'tamil', 'kannada', 'malayalam']
             for lang in v:
                 if lang not in allowed_languages:
                     raise ValueError(f'Language must be one of: {", ".join(allowed_languages)}')
