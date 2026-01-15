@@ -19,7 +19,7 @@ import sys
 import os
 
 # Configuration
-BACKEND_URL = "https://perfect-day-5.preview.emergentagent.com/api"
+BACKEND_URL = "https://wed-invite-8.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@wedding.com"
 ADMIN_PASSWORD = "admin123"
 
