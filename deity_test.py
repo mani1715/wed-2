@@ -178,7 +178,7 @@ class DeityBackgroundTester:
             "event_date": "2024-12-30T09:00:00Z",
             "venue": "Tirumala Temple Complex, Tirupati",
             "language": ["telugu", "english"],
-            "design_id": "heritage_scroll",
+            "design_id": "royal_classic",
             "deity_id": "venkateswara_padmavati",
             "whatsapp_groom": "+919234567890",
             "whatsapp_bride": "+918876543210",
