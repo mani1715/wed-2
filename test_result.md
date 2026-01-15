@@ -432,6 +432,8 @@ test_plan:
   phase_3_verification_needed: false
   phase_3_deity_backend_testing_complete: true
   phase_4_language_extension_implemented: true
+  phase_4_complete: true
+  phase_4_backend_testing_complete: true
 
 agent_communication:
     - agent: "main"
