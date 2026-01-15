@@ -73,7 +73,7 @@ class Profile(BaseModel):
     @field_validator('design_id')
     def validate_design_id(cls, v):
         """Validate design_id is one of the allowed values"""
-        allowed_designs = ['royal_classic', 'floral_soft', 'divine_temple', 'modern_minimal', 'cinematic_luxury']
+        allowed_designs = ['royal_classic', 'floral_soft', 'divine_temple', 'modern_minimal', 'cinematic_luxury', 'temple_divine', 'modern_premium', 'artistic_handcrafted', 'heritage_scroll', 'minimal_elegant']
         if v not in allowed_designs:
             raise ValueError(f'design_id must be one of: {", ".join(allowed_designs)}')
         return v
@@ -128,7 +128,7 @@ class ProfileCreate(BaseModel):
     @field_validator('design_id')
     def validate_design_id(cls, v):
         """Validate design_id is one of the allowed values"""
-        allowed_designs = ['royal_classic', 'floral_soft', 'divine_temple', 'modern_minimal', 'cinematic_luxury']
+        allowed_designs = ['royal_classic', 'floral_soft', 'divine_temple', 'modern_minimal', 'cinematic_luxury', 'temple_divine', 'modern_premium', 'artistic_handcrafted', 'heritage_scroll', 'minimal_elegant']
         if v not in allowed_designs:
             raise ValueError(f'design_id must be one of: {", ".join(allowed_designs)}')
         return v
@@ -185,7 +185,7 @@ class ProfileUpdate(BaseModel):
     def validate_design_id(cls, v):
         """Validate design_id is one of the allowed values"""
         if v is not None:
-            allowed_designs = ['royal_classic', 'floral_soft', 'divine_temple', 'modern_minimal', 'cinematic_luxury']
+            allowed_designs = ['royal_classic', 'floral_soft', 'divine_temple', 'modern_minimal', 'cinematic_luxury', 'temple_divine', 'modern_premium', 'artistic_handcrafted', 'heritage_scroll', 'minimal_elegant']
             if v not in allowed_designs:
                 raise ValueError(f'design_id must be one of: {", ".join(allowed_designs)}')
         return v
