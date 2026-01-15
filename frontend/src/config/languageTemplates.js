@@ -264,6 +264,24 @@ export const LANGUAGES = [
     name: 'Hindi',
     nativeName: 'हिन्दी',
     rtl: false
+  },
+  {
+    code: 'tamil',
+    name: 'Tamil',
+    nativeName: 'தமிழ்',
+    rtl: false
+  },
+  {
+    code: 'kannada',
+    name: 'Kannada',
+    nativeName: 'ಕನ್ನಡ',
+    rtl: false
+  },
+  {
+    code: 'malayalam',
+    name: 'Malayalam',
+    nativeName: 'മലയാളം',
+    rtl: false
   }
 ];
 
