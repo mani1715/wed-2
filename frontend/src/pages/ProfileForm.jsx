@@ -90,6 +90,7 @@ const ProfileForm = () => {
         link_expiry_type: profile.link_expiry_type,
         link_expiry_value: profile.link_expiry_value || '30',
         sections_enabled: profile.sections_enabled,
+        background_music: profile.background_music || { enabled: false, file_url: null },
         slug: profile.slug
       });
     } catch (error) {
