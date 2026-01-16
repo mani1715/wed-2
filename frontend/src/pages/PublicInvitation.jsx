@@ -843,6 +843,186 @@ const PublicInvitation = () => {
           </Card>
         )}
 
+        {/* RSVP Section */}
+        <Card 
+          className="mb-8 p-8"
+          style={{
+            background: 'var(--color-card, #FFFDF7)',
+            border: 'var(--card-border, 1px solid #E8D9C5)',
+            boxShadow: 'var(--card-shadow, 0 4px 6px rgba(0,0,0,0.1))',
+            borderRadius: 'var(--card-radius, 8px)'
+          }}
+        >
+          <h3 
+            className="text-2xl font-semibold mb-4 text-center"
+            style={{ 
+              color: 'var(--color-primary, #8B7355)',
+              fontFamily: 'var(--font-heading, "Playfair Display", serif)'
+            }}
+          >
+            RSVP
+          </h3>
+          <p className="text-center mb-6" style={{ color: 'var(--color-text, #4A3728)' }}>
+            Please let us know if you can join us for this special occasion
+          </p>
+
+          {!rsvpSuccess ? (
+            <form onSubmit={handleSubmitRSVP} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text, #4A3728)' }}>
+                  Your Name *
+                </label>
+                <input
+                  type="text"
+                  value={rsvpData.guest_name}
+                  onChange={(e) => setRsvpData(prev => ({ ...prev, guest_name: e.target.value }))}
+                  required
+                  className="w-full px-4 py-2 border rounded-md"
+                  style={{
+                    borderColor: 'var(--color-accent, #C9A961)',
+                    background: 'var(--color-background, #FFF8E7)',
+                    color: 'var(--color-text, #4A3728)'
+                  }}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text, #4A3728)' }}>
+                  Phone Number (with country code) *
+                </label>
+                <input
+                  type="tel"
+                  value={rsvpData.guest_phone}
+                  onChange={(e) => setRsvpData(prev => ({ ...prev, guest_phone: e.target.value }))}
+                  required
+                  placeholder="+91 98765 43210"
+                  className="w-full px-4 py-2 border rounded-md"
+                  style={{
+                    borderColor: 'var(--color-accent, #C9A961)',
+                    background: 'var(--color-background, #FFF8E7)',
+                    color: 'var(--color-text, #4A3728)'
+                  }}
+                />
+                <p className="text-xs mt-1" style={{ color: 'var(--color-accent, #C9A961)' }}>
+                  Format: +[country code][number]
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text, #4A3728)' }}>
+                  Will you attend? *
+                </label>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { value: 'yes', label: 'Attending', emoji: '✓' },
+                    { value: 'no', label: 'Not Attending', emoji: '✗' },
+                    { value: 'maybe', label: 'Maybe', emoji: '?' }
+                  ].map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => setRsvpData(prev => ({ ...prev, status: option.value }))}
+                      className="px-4 py-3 rounded-md text-sm font-medium transition-all"
+                      style={{
+                        background: rsvpData.status === option.value 
+                          ? 'var(--color-primary, #8B7355)' 
+                          : 'var(--color-background, #FFF8E7)',
+                        color: rsvpData.status === option.value 
+                          ? 'white' 
+                          : 'var(--color-text, #4A3728)',
+                        border: '2px solid var(--color-accent, #C9A961)'
+                      }}
+                    >
+                      <div className="text-lg mb-1">{option.emoji}</div>
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {rsvpData.status === 'yes' && (
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text, #4A3728)' }}>
+                    Number of Guests
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={rsvpData.guest_count}
+                    onChange={(e) => setRsvpData(prev => ({ ...prev, guest_count: parseInt(e.target.value) || 1 }))}
+                    className="w-full px-4 py-2 border rounded-md"
+                    style={{
+                      borderColor: 'var(--color-accent, #C9A961)',
+                      background: 'var(--color-background, #FFF8E7)',
+                      color: 'var(--color-text, #4A3728)'
+                    }}
+                  />
+                </div>
+              )}
+
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text, #4A3728)' }}>
+                  Message / Blessings (Optional, max 250 characters)
+                </label>
+                <textarea
+                  value={rsvpData.message}
+                  onChange={(e) => setRsvpData(prev => ({ ...prev, message: e.target.value.slice(0, 250) }))}
+                  maxLength={250}
+                  rows="3"
+                  className="w-full px-4 py-2 border rounded-md"
+                  style={{
+                    borderColor: 'var(--color-accent, #C9A961)',
+                    background: 'var(--color-background, #FFF8E7)',
+                    color: 'var(--color-text, #4A3728)'
+                  }}
+                  placeholder="Your message..."
+                />
+                <p className="text-xs text-right mt-1" style={{ color: 'var(--color-accent, #C9A961)' }}>
+                  {rsvpData.message.length}/250
+                </p>
+              </div>
+
+              {rsvpError && (
+                <p className="text-red-600 text-sm text-center">
+                  {rsvpError}
+                </p>
+              )}
+
+              {!navigator.onLine && (
+                <p className="text-orange-600 text-sm text-center">
+                  Internet connection required to submit RSVP
+                </p>
+              )}
+
+              <Button
+                type="submit"
+                disabled={rsvpSubmitting || !navigator.onLine}
+                className="w-full text-white"
+                style={{
+                  background: 'var(--color-primary, #8B7355)',
+                  opacity: (rsvpSubmitting || !navigator.onLine) ? 0.6 : 1
+                }}
+              >
+                {rsvpSubmitting ? 'Submitting...' : 'Submit RSVP'}
+              </Button>
+            </form>
+          ) : (
+            <div className="text-center py-8">
+              <div className="text-6xl mb-4">✓</div>
+              <h4 
+                className="text-xl font-semibold mb-2"
+                style={{ color: 'var(--color-primary, #8B7355)' }}
+              >
+                Thank You!
+              </h4>
+              <p style={{ color: 'var(--color-text, #4A3728)' }}>
+                Your RSVP has been submitted successfully.
+              </p>
+            </div>
+          )}
+        </Card>
+
         {/* Footer Section */}
         {invitation.sections_enabled.footer && (
           <div className="text-center py-8">
