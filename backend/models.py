@@ -211,11 +211,16 @@ class ProfileUpdate(BaseModel):
     
     @field_validator('enabled_languages')
     def validate_enabled_languages(cls, v):
-        """Validate at least one language is enabled"""
+        """Validate at least one language is enabled and English is always included"""
         if v is not None:
             if len(v) == 0:
                 raise ValueError('At least one language must be enabled')
-            allowed_languages = ['english', 'telugu', 'hindi', 'tamil', 'kannada', 'malayalam']
+            
+            # English is mandatory
+            if 'english' not in v:
+                raise ValueError('English is mandatory and must be included in enabled languages')
+            
+            allowed_languages = ['english', 'telugu', 'tamil', 'kannada', 'malayalam']
             for lang in v:
                 if lang not in allowed_languages:
                     raise ValueError(f'Language must be one of: {", ".join(allowed_languages)}')
