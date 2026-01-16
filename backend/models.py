@@ -124,6 +124,7 @@ class ProfileCreate(BaseModel):
     enabled_languages: List[str] = Field(default=["english"])
     custom_text: Dict[str, Dict[str, str]] = Field(default_factory=dict)
     sections_enabled: SectionsEnabled = Field(default_factory=SectionsEnabled)
+    background_music: BackgroundMusic = Field(default_factory=BackgroundMusic)
     link_expiry_type: str = "days"
     link_expiry_value: Optional[int] = 30
     
