@@ -49,6 +49,10 @@ const ProfileForm = () => {
       events: true,
       greetings: true,
       footer: true
+    },
+    background_music: {
+      enabled: false,
+      file_url: null
     }
   });
 
