@@ -400,7 +400,7 @@ frontend:
     file: "/app/frontend/src/config/languageTemplates.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "NA"
         - agent: "main"
@@ -411,6 +411,9 @@ frontend:
         - working: true
         - agent: "main"
         - comment: "✅ PHASE 4 VERIFICATION COMPLETE: Performed comprehensive verification of Phase 4 implementation from GitHub repo. ALL requirements met: ✅ Language codes (english, telugu, hindi, tamil, kannada, malayalam) validated in backend models.py ✅ Language templates complete for Tamil, Kannada, Malayalam with all sections (opening, welcome, couple, events, photos, video, greetings, whatsapp, footer) ✅ LANGUAGES array includes all 6 languages with native names ✅ ProfileForm.jsx displays all 6 language checkboxes (lines 476-500) using LANGUAGES array ✅ PublicInvitation.jsx language switcher (lines 217-245) shows only enabled languages with native names ✅ Text resolution priority working: custom_text → languageTemplates → english ✅ At least 1 language required (enforced in ProfileForm) ✅ English enabled by default ✅ No schema changes (uses existing enabled_languages and custom_text fields) ✅ No design/deity modifications. Dependencies installed, all services running. Backend testing already completed (28/28 tests passed). Phase 4 Extended Multi-Language System is 100% COMPLETE and production-ready!"
+        - working: "NA"
+        - agent: "main"
+        - comment: "🔄 PHASE 5 - JSON-BASED LAZY LANGUAGE LOADING: Migrated language system from in-memory JS objects to separate JSON files with lazy loading. Created /app/frontend/public/lang/ directory with 5 JSON files: en.json, te.json, ta.json, kn.json, ml.json (removed Hindi as per requirements). Implemented languageLoader.js utility with: 1) In-memory caching for loaded languages, 2) Lazy loading - loads only selected language file on-demand, 3) Fallback to English if key missing, 4) LANGUAGES constant with 5 languages (English, Telugu, Tamil, Kannada, Malayalam), 5) Preloading support for faster language switching. Updated PublicInvitation.jsx to use async language loading with proper state management. Updated ProfileForm.jsx to import LANGUAGES from languageLoader. Backend validation updated: English is now mandatory and cannot be removed, removed Hindi support, validates English presence in all enabled_languages arrays. Frontend updates: English checkbox disabled in ProfileForm with '(Required)' label, language toggle handler prevents removing English, supports localStorage for language preference. All changes maintain existing functionality while improving performance through lazy loading. Production-ready for testing."
 
 metadata:
   created_by: "main_agent"
