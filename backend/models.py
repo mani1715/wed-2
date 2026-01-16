@@ -185,6 +185,7 @@ class ProfileUpdate(BaseModel):
     enabled_languages: Optional[List[str]] = None
     custom_text: Optional[Dict[str, Dict[str, str]]] = None
     sections_enabled: Optional[SectionsEnabled] = None
+    background_music: Optional[BackgroundMusic] = None
     link_expiry_type: Optional[str] = None
     link_expiry_value: Optional[int] = None
     is_active: Optional[bool] = None
