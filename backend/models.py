@@ -59,6 +59,7 @@ class Profile(BaseModel):
     enabled_languages: List[str] = Field(default=["english"])  # Languages enabled for this invitation
     custom_text: Dict[str, Dict[str, str]] = Field(default_factory=dict)  # Custom text overrides {language: {section: text}}
     sections_enabled: SectionsEnabled = Field(default_factory=SectionsEnabled)
+    background_music: BackgroundMusic = Field(default_factory=BackgroundMusic)  # Optional background music
     link_expiry_type: str  # hours, days, permanent
     link_expiry_value: Optional[int] = None  # number of hours/days
     link_expiry_date: Optional[datetime] = None  # calculated expiry date
