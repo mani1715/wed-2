@@ -36,6 +36,11 @@ class SectionsEnabled(BaseModel):
     footer: bool = True
 
 
+class BackgroundMusic(BaseModel):
+    enabled: bool = False
+    file_url: Optional[str] = None
+
+
 class Profile(BaseModel):
     model_config = ConfigDict(extra="ignore")
     
