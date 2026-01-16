@@ -280,7 +280,7 @@ const PublicInvitation = () => {
           <div className="flex justify-end mb-6">
             <div className="flex gap-2 bg-white/80 backdrop-blur-sm rounded-lg p-2 shadow-sm">
               {availableLanguages.map((langCode) => {
-                const lang = getLanguage(langCode);
+                const lang = LANGUAGES.find(l => l.code === langCode);
                 if (!lang) return null;
                 
                 return (
