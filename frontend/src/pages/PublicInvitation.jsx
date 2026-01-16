@@ -79,6 +79,7 @@ const PublicInvitation = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState('english');
+  const [languageData, setLanguageData] = useState(null);
   const [guestName, setGuestName] = useState('');
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -100,12 +101,33 @@ const PublicInvitation = () => {
       link.rel = 'stylesheet';
       document.head.appendChild(link);
       
-      // Set default language (first enabled language)
+      // Set default language (first enabled language) and preload languages
       if (invitation.enabled_languages && invitation.enabled_languages.length > 0) {
-        setSelectedLanguage(invitation.enabled_languages[0]);
+        const defaultLang = invitation.enabled_languages[0];
+        setSelectedLanguage(defaultLang);
+        
+        // Preload all enabled languages for faster switching
+        preloadLanguages(invitation.enabled_languages).catch(err => {
+          console.warn('Failed to preload languages:', err);
+        });
+        
+        // Load default language immediately
+        loadLanguage(defaultLang).then(setLanguageData).catch(err => {
+          console.error('Failed to load language:', err);
+        });
       }
     }
   }, [invitation]);
+  
+  // Load language data when selected language changes
+  useEffect(() => {
+    loadLanguage(selectedLanguage).then(setLanguageData).catch(err => {
+      console.error('Failed to load language:', err);
+    });
+    
+    // Store language preference in localStorage
+    localStorage.setItem('preferredLanguage', selectedLanguage);
+  }, [selectedLanguage]);
 
   const fetchInvitation = async () => {
     try {
