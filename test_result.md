@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Production-ready wedding & event invitation web platform with admin panel to create invitation profiles, generate unique shareable links, and allow guests to view invitations and submit greetings. UPDATED: Add design system with 8 selectable themes that control layout, colors, typography, and styling of invitation pages."
+user_problem_statement: "Production-ready wedding & event invitation web platform with admin panel to create invitation profiles, generate unique shareable links, and allow guests to view invitations and submit greetings. UPDATED: Add design system with 8 selectable themes that control layout, colors, typography, and styling of invitation pages. PHASE 6: Add production-ready RSVP system with guest tracking, status filtering, CSV export, and duplicate prevention. Add optional background music feature with admin control, non-autoplay, guest toggle, and browser policy compliance."
 
 backend:
   - task: "Authentication System"
