@@ -320,3 +320,100 @@ class InvitationPublicView(BaseModel):
     background_music: BackgroundMusic
     media: List[ProfileMedia]
     greetings: List[GreetingResponse]
+
+
+class RSVP(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    profile_id: str
+    guest_name: str
+    guest_phone: str
+    status: str  # yes, no, maybe
+    guest_count: int = 1
+    message: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    
+    @field_validator('guest_phone')
+    def validate_phone(cls, v):
+        """Validate phone number is in E.164 format"""
+        pattern = r'^\+[1-9]\d{1,14}$'
+        if not re.match(pattern, v):
+            raise ValueError('Phone number must be in E.164 format (e.g., +919876543210)')
+        return v
+    
+    @field_validator('status')
+    def validate_status(cls, v):
+        """Validate RSVP status"""
+        if v not in ['yes', 'no', 'maybe']:
+            raise ValueError('Status must be one of: yes, no, maybe')
+        return v
+    
+    @field_validator('guest_count')
+    def validate_guest_count(cls, v):
+        """Validate guest count is between 1 and 10"""
+        if v < 1 or v > 10:
+            raise ValueError('Guest count must be between 1 and 10')
+        return v
+    
+    @field_validator('message')
+    def validate_message(cls, v):
+        """Validate message length"""
+        if v is not None and len(v) > 250:
+            raise ValueError('Message must be 250 characters or less')
+        return v
+
+
+class RSVPCreate(BaseModel):
+    guest_name: str
+    guest_phone: str
+    status: str
+    guest_count: int = 1
+    message: Optional[str] = None
+    
+    @field_validator('guest_phone')
+    def validate_phone(cls, v):
+        """Validate phone number is in E.164 format"""
+        pattern = r'^\+[1-9]\d{1,14}$'
+        if not re.match(pattern, v):
+            raise ValueError('Phone number must be in E.164 format (e.g., +919876543210)')
+        return v
+    
+    @field_validator('status')
+    def validate_status(cls, v):
+        """Validate RSVP status"""
+        if v not in ['yes', 'no', 'maybe']:
+            raise ValueError('Status must be one of: yes, no, maybe')
+        return v
+    
+    @field_validator('guest_count')
+    def validate_guest_count(cls, v):
+        """Validate guest count is between 1 and 10"""
+        if v < 1 or v > 10:
+            raise ValueError('Guest count must be between 1 and 10')
+        return v
+    
+    @field_validator('message')
+    def validate_message(cls, v):
+        """Validate message length"""
+        if v is not None and len(v) > 250:
+            raise ValueError('Message must be 250 characters or less')
+        return v
+
+
+class RSVPResponse(BaseModel):
+    id: str
+    guest_name: str
+    guest_phone: str
+    status: str
+    guest_count: int
+    message: Optional[str]
+    created_at: datetime
+
+
+class RSVPStats(BaseModel):
+    total_rsvps: int
+    attending_count: int
+    not_attending_count: int
+    maybe_count: int
+    total_guest_count: int
