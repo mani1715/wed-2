@@ -7,7 +7,7 @@ import axios from 'axios';
 import { ArrowLeft, Save, Eye, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import { DESIGN_THEMES } from '@/config/designThemes';
 import { DEITY_OPTIONS } from '@/config/religiousAssets';
-import { LANGUAGES } from '@/config/languageTemplates';
+import { LANGUAGES } from '@/utils/languageLoader';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
