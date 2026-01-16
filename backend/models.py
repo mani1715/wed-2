@@ -317,5 +317,6 @@ class InvitationPublicView(BaseModel):
     enabled_languages: List[str]
     custom_text: Dict[str, Dict[str, str]]
     sections_enabled: SectionsEnabled
+    background_music: BackgroundMusic
     media: List[ProfileMedia]
     greetings: List[GreetingResponse]
