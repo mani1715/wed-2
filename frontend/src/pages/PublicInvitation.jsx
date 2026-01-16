@@ -189,6 +189,83 @@ const PublicInvitation = () => {
     }
   };
 
+  // Music player logic
+  useEffect(() => {
+    if (!invitation || !invitation.background_music || !invitation.background_music.enabled) {
+      return;
+    }
+
+    // Configure audio
+    audioRef.src = invitation.background_music.file_url;
+    audioRef.loop = true;
+    audioRef.volume = 0.5;
+    audioRef.preload = 'none';
+
+    // Pause on page blur/tab change
+    const handleVisibilityChange = () => {
+      if (document.hidden && musicPlaying) {
+        audioRef.pause();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      audioRef.pause();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [invitation]);
+
+  const toggleMusic = () => {
+    if (musicPlaying) {
+      audioRef.pause();
+      setMusicPlaying(false);
+    } else {
+      audioRef.play().catch(err => {
+        console.error('Failed to play audio:', err);
+      });
+      setMusicPlaying(true);
+    }
+  };
+
+  // RSVP submission
+  const handleSubmitRSVP = async (e) => {
+    e.preventDefault();
+    
+    // Check if online
+    if (!navigator.onLine) {
+      setRsvpError('Internet connection required to submit RSVP');
+      return;
+    }
+
+    setRsvpSubmitting(true);
+    setRsvpError('');
+
+    try {
+      await axios.post(`${API_URL}/api/rsvp?slug=${slug}`, rsvpData);
+      setRsvpSuccess(true);
+      setRsvpData({
+        guest_name: '',
+        guest_phone: '',
+        status: 'yes',
+        guest_count: 1,
+        message: ''
+      });
+      setShowRSVP(false);
+    } catch (error) {
+      console.error('Failed to submit RSVP:', error);
+      if (error.response?.status === 400) {
+        setRsvpError('You have already submitted an RSVP for this invitation');
+      } else if (error.response?.status === 410) {
+        setRsvpError('This invitation link has expired');
+      } else {
+        setRsvpError('Failed to submit RSVP. Please try again.');
+      }
+    } finally {
+      setRsvpSubmitting(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-background, #FFF8E7)' }}>
