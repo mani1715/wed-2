@@ -251,6 +251,7 @@ class ProfileResponse(BaseModel):
     enabled_languages: List[str]
     custom_text: Dict[str, Dict[str, str]]
     sections_enabled: SectionsEnabled
+    background_music: BackgroundMusic
     link_expiry_type: str
     link_expiry_value: Optional[int]
     link_expiry_date: Optional[datetime]
