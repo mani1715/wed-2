@@ -84,6 +84,23 @@ const PublicInvitation = () => {
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  
+  // Music player state
+  const [musicPlaying, setMusicPlaying] = useState(false);
+  const [audioRef] = useState(new Audio());
+  
+  // RSVP state
+  const [showRSVP, setShowRSVP] = useState(false);
+  const [rsvpData, setRsvpData] = useState({
+    guest_name: '',
+    guest_phone: '',
+    status: 'yes',
+    guest_count: 1,
+    message: ''
+  });
+  const [rsvpSubmitting, setRsvpSubmitting] = useState(false);
+  const [rsvpSuccess, setRsvpSuccess] = useState(false);
+  const [rsvpError, setRsvpError] = useState('');
 
   useEffect(() => {
     fetchInvitation();
