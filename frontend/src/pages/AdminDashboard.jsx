@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import axios from 'axios';
-import { Plus, LogOut, ExternalLink, Copy, Edit, Trash2, Calendar, Clock, Palette, Church, Languages, Users, Eye, Smartphone, Monitor } from 'lucide-react';
+import { Plus, LogOut, ExternalLink, Copy, Edit, Trash2, Calendar, Clock, Palette, Church, Languages, Users, Eye, Smartphone, Monitor, Download } from 'lucide-react';
 import { DESIGN_THEMES } from '@/config/designThemes';
 import { DEITY_OPTIONS } from '@/config/religiousAssets';
 
@@ -120,6 +120,41 @@ const AdminDashboard = () => {
       return `Expires ${expiryDate.toLocaleDateString()}`;
     }
     return 'N/A';
+  };
+
+  // PHASE 8: Download PDF invitation
+  const handleDownloadPDF = async (profile) => {
+    try {
+      // Get the primary language (first in enabled_languages array)
+      const language = profile.enabled_languages && profile.enabled_languages.length > 0 
+        ? profile.enabled_languages[0] 
+        : 'english';
+      
+      const response = await axios.get(
+        `${API_URL}/api/admin/profiles/${profile.id}/download-pdf?language=${language}`,
+        {
+          responseType: 'blob'
+        }
+      );
+      
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      
+      // Generate filename
+      const groomName = profile.groom_name.split(' ')[0].toLowerCase().replace(/[^a-z]/g, '');
+      const brideName = profile.bride_name.split(' ')[0].toLowerCase().replace(/[^a-z]/g, '');
+      link.setAttribute('download', `wedding-invitation-${groomName}-${brideName}.pdf`);
+      
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to download PDF:', error);
+      alert('Failed to download PDF. Please try again.');
+    }
   };
 
   if (loading) {
