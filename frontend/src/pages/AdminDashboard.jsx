@@ -228,6 +228,46 @@ const AdminDashboard = () => {
                     </div>
                   </div>
 
+                  {/* PHASE 7: Analytics Display */}
+                  {analytics[profile.id] && (
+                    <div className="pt-3 pb-2 border-t border-gray-200">
+                      <div className="grid grid-cols-3 gap-2 text-center">
+                        <div className="bg-blue-50 rounded p-2">
+                          <div className="flex items-center justify-center mb-1">
+                            <Eye className="w-3 h-3 text-blue-600" />
+                          </div>
+                          <div className="text-lg font-bold text-blue-700">
+                            {analytics[profile.id].total_views}
+                          </div>
+                          <div className="text-xs text-blue-600">Total Views</div>
+                        </div>
+                        <div className="bg-green-50 rounded p-2">
+                          <div className="flex items-center justify-center mb-1">
+                            <Smartphone className="w-3 h-3 text-green-600" />
+                          </div>
+                          <div className="text-lg font-bold text-green-700">
+                            {analytics[profile.id].mobile_views}
+                          </div>
+                          <div className="text-xs text-green-600">Mobile</div>
+                        </div>
+                        <div className="bg-purple-50 rounded p-2">
+                          <div className="flex items-center justify-center mb-1">
+                            <Monitor className="w-3 h-3 text-purple-600" />
+                          </div>
+                          <div className="text-lg font-bold text-purple-700">
+                            {analytics[profile.id].desktop_views}
+                          </div>
+                          <div className="text-xs text-purple-600">Desktop</div>
+                        </div>
+                      </div>
+                      {analytics[profile.id].last_viewed_at && (
+                        <div className="text-xs text-gray-500 text-center mt-2">
+                          Last viewed: {new Date(analytics[profile.id].last_viewed_at).toLocaleString()}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* Actions */}
                   <div className="pt-4 border-t border-gray-200 space-y-2">
                     <div className="flex gap-2">
