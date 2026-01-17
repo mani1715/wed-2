@@ -1,8 +1,30 @@
 from pydantic import BaseModel, Field, ConfigDict, field_validator
 from typing import Optional, List, Dict
-from datetime import datetime, timezone
+from datetime import datetime, timezone, time
 import uuid
 import re
+
+
+class WeddingEvent(BaseModel):
+    """Model for individual wedding event"""
+    event_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    date: str  # yyyy-mm-dd format
+    start_time: str  # hh:mm format
+    end_time: Optional[str] = None  # hh:mm format
+    venue_name: str
+    venue_address: str
+    map_link: str
+    description: Optional[str] = Field(None, max_length=200)
+    visible: bool = True
+    order: int = 0
+    
+    @field_validator('description')
+    def validate_description(cls, v):
+        """Validate description max length"""
+        if v and len(v) > 200:
+            raise ValueError('Description must be 200 characters or less')
+        return v
 
 
 class Admin(BaseModel):
