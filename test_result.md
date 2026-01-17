@@ -587,12 +587,14 @@ frontend:
 
 metadata:
   created_by: "main_agent"
-  version: "4.0"
+  version: "5.0"
   test_sequence: 1
   run_ui: true
 
 test_plan:
   current_focus:
+    - "PHASE 7 - Invitation View Tracking"
+    - "PHASE 7 - Analytics Display in Admin Dashboard"
     - "PHASE 6 - RSVP System"
     - "PHASE 6 - Background Music"
     - "AdminDashboard - RSVP Management Button"
@@ -613,6 +615,8 @@ test_plan:
   phase_6_rsvp_system_implemented: true
   phase_6_background_music_implemented: true
   phase_6_verification_needed: true
+  phase_7_analytics_implemented: true
+  phase_7_verification_needed: true
 
 agent_communication:
     - agent: "main"
