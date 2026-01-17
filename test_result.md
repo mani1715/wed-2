@@ -698,3 +698,69 @@ agent_communication:
     - message: "🎯 PHASE 7 COMPLETE - INVITATION ANALYTICS & VIEW TRACKING IMPLEMENTED: Privacy-first, lightweight analytics system with zero performance impact. BACKEND: ✅ Analytics model with profile_id, total_views, mobile_views, desktop_views, last_viewed_at fields ✅ ViewTrackingRequest model with device_type validation (mobile/desktop only) ✅ AnalyticsResponse model for API responses ✅ POST /api/invite/{slug}/view endpoint (public, non-blocking, 204 response, <5ms processing) - tracks view and increments counters ✅ GET /api/admin/profiles/{id}/analytics endpoint (admin-only) - returns view statistics. FRONTEND PUBLIC: ✅ PublicInvitation.jsx trackInvitationView() function fires after content fetch (non-blocking) ✅ Uses localStorage to prevent duplicate views (key: invitation_viewed_{slug}) ✅ Detects device type: mobile (<768px) or desktop (≥768px) ✅ Sends async request to tracking endpoint ✅ Silent fail - does not disrupt user experience. FRONTEND ADMIN: ✅ AdminDashboard.jsx fetchAllAnalytics() fetches stats for all profiles on load ✅ Each profile card displays 3 colored stat cards: Total Views (blue, Eye icon), Mobile Views (green, Smartphone icon), Desktop Views (purple, Monitor icon) ✅ Shows Last Viewed timestamp below stats ✅ Graceful handling if analytics unavailable (shows zeros). PRIVACY COMPLIANCE: ✅ No cookies ✅ No IP storage ✅ No location tracking ✅ No third-party analytics ✅ No user identity tracking ✅ GDPR-safe by default. PERFORMANCE: ✅ Zero blocking - tracking fires after content loaded ✅ No external libraries ✅ <5ms server processing ✅ No impact on page load (LCP/CLS). OUT OF SCOPE (NOT ADDED): ✅ No charts/graphs/heatmaps ✅ No session recording ✅ No Google Analytics/Facebook Pixel ✅ No guest identity tracking. SUCCESS CRITERIA MET: Admin can see invitation reach, guest experience unchanged, no performance regression, no privacy risk. Production-ready."
     - agent: "testing"
     - message: "🎉 PHASE 7 INVITATION ANALYTICS & VIEW TRACKING BACKEND TESTING COMPLETE - ALL TESTS PASSED (5/5, 100% SUCCESS RATE)! Executed comprehensive testing of all Phase 7 analytics functionality using admin credentials (admin@wedding.com/admin123). ✅ VIEW TRACKING ENDPOINT: POST /api/invite/{slug}/view working perfectly - returns 204 status code, tracks mobile/desktop device types correctly, average response time 67ms (meets <100ms requirement), invalid slug returns 404. Created test profiles with realistic Indian wedding data (Rajesh Kumar & Priya Sharma). ✅ ANALYTICS RETRIEVAL: GET /api/admin/profiles/{profile_id}/analytics returns all required fields (profile_id, total_views, mobile_views, desktop_views, last_viewed_at), view counts match tracked views (1 mobile + 1 desktop = 2 total), invalid profile_id returns 404, no authentication returns 403. ✅ VIEW INCREMENT LOGIC: Multiple views increment correctly (tested 3 mobile + 2 desktop = 5 total views), mobile_views and desktop_views increment independently, last_viewed_at timestamp updates on each view. ✅ ZERO VIEWS CASE: New profiles that have never been viewed return zeros for all view counts and null for last_viewed_at. ✅ PERFORMANCE CHECK: Average response time 67ms meets performance requirements, maximum response time 71ms, doesn't block invitation loading (invitation loads in 66ms). All analytics endpoints working correctly. Privacy-first system with no cookies, no IP storage, no location tracking. Backend Phase 7 analytics system is production-ready and meets all review requirements!"
+  - agent: "main"
+    message: |
+      ✅ PHASE 8 - PRINTABLE PDF INVITATION IMPLEMENTED
+      
+      Complete PDF generation system for wedding invitations.
+      
+      BACKEND IMPLEMENTATION:
+      - Installed ReportLab library for server-side PDF generation
+      - Created comprehensive PDF generation function (generate_invitation_pdf)
+      - PDF Features:
+        * A4 portrait size with 0.75 inch margins (printer-safe)
+        * Design theme colors applied (8 themes supported)
+        * Multi-language support (6 languages: English, Telugu, Hindi, Tamil, Kannada, Malayalam)
+        * Clean typography with proper spacing and hierarchy
+        * Professional layout optimized for printing
+      
+      - PDF Content Included:
+        * Wedding invitation title (language-specific)
+        * Couple names (bold, centered)
+        * Complete event schedule (sorted chronologically)
+        * Date, time, venue name, venue address for each event
+        * Event descriptions
+        * Contact information (WhatsApp numbers for groom & bride)
+      
+      - Content Excluded (as specified):
+        * RSVP buttons and forms
+        * Guest wishes/greetings wall
+        * WhatsApp action buttons
+        * Map embeds
+        * Background music controls
+        * Analytics data
+        * Any interactive elements
+      
+      - API Endpoint: GET /api/admin/profiles/{id}/download-pdf?language={lang}
+        * Admin authentication required (admin-only access)
+        * Language parameter to select PDF language
+        * Returns PDF as downloadable file
+        * Filename format: wedding-invitation-{groom}-{bride}.pdf
+        * Security: Public users cannot access PDF endpoint
+      
+      FRONTEND IMPLEMENTATION:
+      - Added "Download PDF" button in AdminDashboard.jsx
+      - Button placement: Below RSVPs button, above Delete button
+      - Styling: Blue theme (text-blue-600, hover:bg-blue-50) with Download icon
+      - Download functionality:
+        * Automatically selects primary language from profile
+        * Calls backend PDF endpoint
+        * Downloads PDF as blob
+        * Proper filename generation
+        * Error handling with user-friendly alerts
+      
+      PERFORMANCE & OPTIMIZATION:
+      - Server-side generation (zero frontend performance impact)
+      - PDF generation on-demand only (not on profile save)
+      - Lightweight PDF (<2MB target)
+      - Fast generation (<2 seconds)
+      - No heavy libraries on frontend
+      
+      Ready for backend testing to verify:
+      1. PDF endpoint authentication (admin-only)
+      2. PDF generation with all design themes
+      3. Multi-language PDF generation
+      4. Correct content inclusion/exclusion
+      5. File size and generation time
+      6. Filename format correctness
+      7. Download functionality in browser
