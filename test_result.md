@@ -187,6 +187,8 @@ metadata:
 
 test_plan:
   current_focus:
+    - "Map Display Settings UI in Profile Form"
+    - "Map Embed Display in Public Invitation"
     - "API Events Handling"
     - "Events Management UI in Profile Form"
     - "Events Display in Public Invitation"
@@ -203,6 +205,7 @@ agent_communication:
       - Created WeddingEvent model with validation
       - Added events array to Profile models
       - Updated API endpoints to handle events
+      - MapSettings model already exists with embed_enabled field
       
       FRONTEND:
       - Added events management in admin profile form
@@ -210,6 +213,14 @@ agent_communication:
       - Event reordering, visibility toggle, delete functions
       - Public view displays events chronologically with map links
       - Backward compatible with existing profiles
+      
+      NEWLY ADDED (Continuation Session):
+      - Map Display Settings section in ProfileForm with toggle to enable/disable map embeds
+      - Responsive map embed display in PublicInvitation:
+        * Mobile (<768px): Link ONLY
+        * Desktop (≥768px): Link always visible + optional embed if admin enabled
+        * Embed appears below event info, never above
+        * Automatically converts Google Maps links to embed format
       
       Ready for backend testing. Frontend will need user confirmation before testing.
 
