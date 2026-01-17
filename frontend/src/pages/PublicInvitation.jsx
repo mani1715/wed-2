@@ -605,7 +605,7 @@ const PublicInvitation = () => {
                       )}
 
                       {event.map_link && (
-                        <div className="mt-3">
+                        <div className="mt-3 space-y-3">
                           <a
                             href={event.map_link}
                             target="_blank"
@@ -619,6 +619,24 @@ const PublicInvitation = () => {
                           >
                             📍 Get Directions
                           </a>
+                          
+                          {/* Map Embed - Desktop Only, if enabled */}
+                          {invitation.map_settings?.embed_enabled && (
+                            <div className="hidden md:block mt-3 w-full h-64 rounded-lg overflow-hidden border border-gray-300">
+                              <iframe
+                                src={event.map_link.includes('embed') 
+                                  ? event.map_link 
+                                  : event.map_link.replace('/maps/place/', '/maps/embed/v1/place?key=').replace('?', '&')}
+                                width="100%"
+                                height="100%"
+                                style={{ border: 0 }}
+                                allowFullScreen=""
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                                title={`Map for ${event.venue_name}`}
+                              ></iframe>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
