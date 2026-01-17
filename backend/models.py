@@ -318,6 +318,7 @@ class ProfileResponse(BaseModel):
     custom_text: Dict[str, Dict[str, str]]
     sections_enabled: SectionsEnabled
     background_music: BackgroundMusic
+    events: List[WeddingEvent]
     link_expiry_type: str
     link_expiry_value: Optional[int]
     link_expiry_date: Optional[datetime]
