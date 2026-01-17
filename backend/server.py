@@ -1,4 +1,5 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Depends, status
+from fastapi.responses import StreamingResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -10,6 +11,17 @@ from datetime import datetime, timedelta, timezone
 import re
 import random
 import string
+import io
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import inch
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_CENTER, TA_LEFT
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image as RLImage
+from reportlab.lib import colors as rl_colors
+from reportlab.pdfgen import canvas
+from reportlab.lib.utils import ImageReader
+import urllib.request
+from PIL import Image as PILImage
 
 from models import (
     Admin, AdminLogin, AdminResponse,
