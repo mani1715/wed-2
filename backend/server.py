@@ -610,6 +610,96 @@ async def export_rsvps_csv(profile_id: str, admin_id: str = Depends(get_current_
     )
 
 
+# ==================== ANALYTICS ROUTES (PHASE 7) ====================
+
+@api_router.post("/invite/{slug}/view", status_code=204)
+async def track_invitation_view(slug: str, view_data: ViewTrackingRequest):
+    """Track invitation view (public endpoint, privacy-first)"""
+    # Find profile by slug
+    profile = await db.profiles.find_one({"slug": slug}, {"_id": 0})
+    
+    if not profile:
+        raise HTTPException(status_code=404, detail="Invitation not found")
+    
+    # Check if active (but still track view even if expired for analytics)
+    profile_id = profile['id']
+    
+    # Find or create analytics document
+    analytics_doc = await db.analytics.find_one({"profile_id": profile_id}, {"_id": 0})
+    
+    if analytics_doc:
+        # Update existing analytics
+        update_data = {
+            "total_views": analytics_doc.get('total_views', 0) + 1,
+            "last_viewed_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Increment device-specific counter
+        if view_data.device_type == "mobile":
+            update_data["mobile_views"] = analytics_doc.get('mobile_views', 0) + 1
+        else:
+            update_data["desktop_views"] = analytics_doc.get('desktop_views', 0) + 1
+        
+        await db.analytics.update_one(
+            {"profile_id": profile_id},
+            {"$set": update_data}
+        )
+    else:
+        # Create new analytics document
+        analytics = Analytics(
+            profile_id=profile_id,
+            total_views=1,
+            mobile_views=1 if view_data.device_type == "mobile" else 0,
+            desktop_views=1 if view_data.device_type == "desktop" else 0,
+            last_viewed_at=datetime.now(timezone.utc)
+        )
+        
+        doc = analytics.model_dump()
+        doc['created_at'] = doc['created_at'].isoformat()
+        doc['last_viewed_at'] = doc['last_viewed_at'].isoformat()
+        
+        await db.analytics.insert_one(doc)
+    
+    # Return 204 No Content for fast response
+    return None
+
+
+@api_router.get("/admin/profiles/{profile_id}/analytics", response_model=AnalyticsResponse)
+async def get_profile_analytics(profile_id: str, admin_id: str = Depends(get_current_admin)):
+    """Get analytics for a specific profile (admin only)"""
+    # Verify profile exists
+    profile = await db.profiles.find_one({"id": profile_id}, {"_id": 0})
+    
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profile not found")
+    
+    # Get analytics
+    analytics_doc = await db.analytics.find_one({"profile_id": profile_id}, {"_id": 0})
+    
+    if not analytics_doc:
+        # Return zero stats if no views yet
+        return AnalyticsResponse(
+            profile_id=profile_id,
+            total_views=0,
+            mobile_views=0,
+            desktop_views=0,
+            last_viewed_at=None
+        )
+    
+    # Convert datetime string if needed
+    last_viewed = analytics_doc.get('last_viewed_at')
+    if isinstance(last_viewed, str):
+        last_viewed = datetime.fromisoformat(last_viewed)
+    
+    return AnalyticsResponse(
+        profile_id=analytics_doc['profile_id'],
+        total_views=analytics_doc.get('total_views', 0),
+        mobile_views=analytics_doc.get('mobile_views', 0),
+        desktop_views=analytics_doc.get('desktop_views', 0),
+        last_viewed_at=last_viewed
+    )
+
+
 # ==================== CONFIGURATION ROUTES ====================
 
 @api_router.get("/config/designs")
