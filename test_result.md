@@ -561,6 +561,30 @@ frontend:
         - agent: "main"
         - comment: "✅ PHASE 6 BACKGROUND MUSIC IMPLEMENTED: Complete optional background music feature with all specifications. BACKEND: BackgroundMusic model with enabled (boolean, default: false) and file_url (optional string) fields. Integrated into Profile, ProfileCreate, ProfileUpdate, ProfileResponse, InvitationPublicView models. FRONTEND ADMIN: ProfileForm.jsx updated with 'Enable Background Music' toggle (default: OFF), music file URL input field (shown only when enabled, required when enabled, placeholder with mp3 example), instructions about mp3 format, max 5MB, loop behavior at 50% volume, guest control. FRONTEND PUBLIC: PublicInvitation.jsx with fixed-position music player icon (top-left, z-index 50), shown ONLY when music enabled and file_url present, states: 🔊 (playing) with pause icon, 🔇 (default/paused) with play icon, HTML5 audio element with preload='none', loop enabled, volume capped at 0.5 (50%), NO autoplay - music starts only after user clicks icon, pause on page blur/tab change using visibilitychange event, music stops immediately when toggled OFF. Respects browser autoplay policies. NO animations on speaker icon. NO visual effects tied to music. Music is OPTIONAL and non-blocking. All requirements met: music not autoplay, starts only after user interaction, guest can toggle ON/OFF anytime, music continues across scroll, pauses on blur/tab change."
 
+  - task: "PHASE 7 - Invitation View Tracking"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/models.py, /app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "✅ PHASE 7 VIEW TRACKING IMPLEMENTED: Privacy-first invitation analytics system. BACKEND: Created Analytics model with profile_id, total_views, mobile_views, desktop_views, last_viewed_at fields. Added ViewTrackingRequest and AnalyticsResponse models. API Endpoints: POST /api/invite/{slug}/view (public, 204 response, <5ms processing), GET /api/admin/profiles/{id}/analytics (admin-only, returns view stats). Device detection: mobile/desktop only. No cookies, no IP storage, no location tracking, no third-party analytics. FRONTEND PUBLIC: PublicInvitation.jsx updated with trackInvitationView() function that fires after content fetch, uses localStorage to prevent duplicate views per device, detects mobile (<768px) vs desktop, sends non-blocking request. FRONTEND ADMIN: AdminDashboard.jsx updated to fetch and display analytics for each profile - shows Total Views, Mobile Views, Desktop Views in colored stat cards, displays Last Viewed timestamp. No charts, no graphs, no heatmaps. Zero performance impact, GDPR-safe by default. Production-ready lightweight analytics."
+
+  - task: "PHASE 7 - Analytics Display in Admin Dashboard"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/AdminDashboard.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "✅ PHASE 7 ANALYTICS UI IMPLEMENTED: Admin dashboard displays invitation view statistics. Added fetchAllAnalytics() function to fetch analytics for all profiles on dashboard load. Each profile card now shows: 1) Total Views (blue card with Eye icon), 2) Mobile Views (green card with Smartphone icon), 3) Desktop Views (purple card with Monitor icon), 4) Last Viewed timestamp below stats. Stats displayed in 3-column grid with colored background cards. Graceful handling if analytics data unavailable (shows zeros). No blocking, no charts, clean simple display. Integrated seamlessly with existing profile cards."
+
 metadata:
   created_by: "main_agent"
   version: "4.0"
