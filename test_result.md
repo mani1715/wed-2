@@ -614,14 +614,14 @@ frontend:
 
 metadata:
   created_by: "main_agent"
-  version: "5.0"
+  version: "6.0"
   test_sequence: 1
   run_ui: true
 
 test_plan:
   current_focus:
-    - "PHASE 7 - Invitation View Tracking"
-    - "PHASE 7 - Analytics Display in Admin Dashboard"
+    - "PHASE 8 - PDF Generation Backend"
+    - "PHASE 8 - PDF Download Frontend"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -639,6 +639,7 @@ test_plan:
   phase_7_analytics_implemented: true
   phase_7_backend_testing_complete: true
   phase_7_verification_complete: true
+  phase_8_pdf_generation_implemented: true
 
 agent_communication:
     - agent: "main"
