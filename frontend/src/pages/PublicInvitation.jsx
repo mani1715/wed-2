@@ -507,8 +507,129 @@ const PublicInvitation = () => {
           </Card>
         )}
 
-        {/* Event Details Section */}
-        {invitation.sections_enabled.events && (
+        {/* Event Schedule Section */}
+        {invitation.sections_enabled.events && invitation.events && invitation.events.length > 0 && (
+          <Card 
+            className="p-8 mb-8"
+            style={{
+              background: 'var(--color-card, #FFFDF7)',
+              boxShadow: 'var(--card-shadow, 0 4px 12px rgba(139, 115, 85, 0.15))',
+              border: 'var(--card-border, 1px solid #E8D9C5)',
+              borderRadius: 'var(--card-radius, 12px)',
+              marginBottom: 'var(--spacing-card, 1.5rem)'
+            }}
+          >
+            <h3 
+              className="text-2xl font-semibold mb-6 text-center"
+              style={{ 
+                fontFamily: 'var(--font-heading, "Cinzel", serif)',
+                color: 'var(--color-primary, #8B7355)'
+              }}
+            >
+              Event Schedule
+            </h3>
+            
+            <div className="space-y-6">
+              {invitation.events
+                .filter(event => event.visible)
+                .sort((a, b) => {
+                  const dateCompare = new Date(a.date).getTime() - new Date(b.date).getTime();
+                  if (dateCompare !== 0) return dateCompare;
+                  return a.start_time.localeCompare(b.start_time);
+                })
+                .map((event) => (
+                  <div 
+                    key={event.event_id}
+                    className="border-l-4 pl-4 py-2"
+                    style={{ 
+                      borderLeftColor: 'var(--color-secondary, #D4AF37)',
+                      borderRadius: '2px'
+                    }}
+                  >
+                    <h4 
+                      className="text-lg font-semibold mb-2"
+                      style={{ color: 'var(--color-primary, #8B7355)' }}
+                    >
+                      {event.name}
+                    </h4>
+                    
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-start">
+                        <Calendar 
+                          className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" 
+                          style={{ color: 'var(--color-secondary, #D4AF37)' }} 
+                        />
+                        <div style={{ color: 'var(--color-text, #4A3728)' }}>
+                          {new Date(event.date).toLocaleDateString('en-US', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </div>
+                      </div>
+
+                      <div className="flex items-start">
+                        <span className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0 text-center" style={{ color: 'var(--color-secondary, #D4AF37)' }}>⏰</span>
+                        <div style={{ color: 'var(--color-text, #4A3728)' }}>
+                          {event.start_time}
+                          {event.end_time && ` - ${event.end_time}`}
+                        </div>
+                      </div>
+
+                      <div className="flex items-start">
+                        <MapPin 
+                          className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" 
+                          style={{ color: 'var(--color-secondary, #D4AF37)' }} 
+                        />
+                        <div>
+                          <div 
+                            className="font-medium"
+                            style={{ color: 'var(--color-primary, #8B7355)' }}
+                          >
+                            {event.venue_name}
+                          </div>
+                          <div 
+                            className="text-xs mt-1"
+                            style={{ color: 'var(--color-text, #4A3728)' }}
+                          >
+                            {event.venue_address}
+                          </div>
+                        </div>
+                      </div>
+
+                      {event.description && (
+                        <div className="mt-2 italic text-xs" style={{ color: 'var(--color-text-light, #6B5A47)' }}>
+                          {event.description}
+                        </div>
+                      )}
+
+                      {event.map_link && (
+                        <div className="mt-3">
+                          <a
+                            href={event.map_link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-md"
+                            style={{
+                              background: 'var(--color-secondary, #D4AF37)',
+                              color: 'white',
+                              textDecoration: 'none'
+                            }}
+                          >
+                            📍 Get Directions
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </Card>
+        )}
+
+        {/* Fallback: Show old event details if no events array */}
+        {invitation.sections_enabled.events && (!invitation.events || invitation.events.length === 0) && (
           <Card 
             className="p-8 mb-8"
             style={{
