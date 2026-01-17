@@ -17,7 +17,7 @@ import sys
 import traceback
 
 # Configuration
-BASE_URL = "https://dream-ceremony-6.preview.emergentagent.com/api"
+BASE_URL = "https://wed-organizer-16.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@wedding.com"
 ADMIN_PASSWORD = "admin123"
 
