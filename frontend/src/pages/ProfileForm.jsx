@@ -783,6 +783,201 @@ const ProfileForm = () => {
             )}
           </Card>
 
+          {/* Wedding Events Schedule */}
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-800">Wedding Events Schedule</h2>
+                <p className="text-sm text-gray-600 mt-1">Add multiple events (max 7). At least one event must be visible.</p>
+              </div>
+              {formData.events.length === 0 && (
+                <Button
+                  type="button"
+                  onClick={addDefaultEvents}
+                  variant="outline"
+                  className="border-rose-500 text-rose-600 hover:bg-rose-50"
+                >
+                  Add Default Events
+                </Button>
+              )}
+            </div>
+
+            {formData.events.length > 0 && (
+              <div className="space-y-4 mb-4">
+                {formData.events.map((event, index) => (
+                  <div key={event.event_id} className={`border rounded-lg p-4 ${!event.visible ? 'bg-gray-50 opacity-60' : 'bg-white'}`}>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm font-medium text-gray-700">Event {index + 1}</span>
+                        <label className="flex items-center space-x-1 text-xs">
+                          <input
+                            type="checkbox"
+                            checked={event.visible}
+                            onChange={() => toggleEventVisibility(event.event_id)}
+                            className="w-3 h-3"
+                          />
+                          <span>Visible</span>
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          type="button"
+                          onClick={() => moveEvent(event.event_id, 'up')}
+                          disabled={index === 0}
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 w-7 p-0"
+                        >
+                          <ChevronUp className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          type="button"
+                          onClick={() => moveEvent(event.event_id, 'down')}
+                          disabled={index === formData.events.length - 1}
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 w-7 p-0"
+                        >
+                          <ChevronDown className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          type="button"
+                          onClick={() => deleteEvent(event.event_id)}
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 text-red-600 hover:bg-red-50"
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Event Name *
+                        </label>
+                        <input
+                          type="text"
+                          value={event.name}
+                          onChange={(e) => updateEvent(event.event_id, 'name', e.target.value)}
+                          placeholder="e.g., Mehendi Ceremony"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Event Date *
+                        </label>
+                        <input
+                          type="date"
+                          value={event.date}
+                          onChange={(e) => updateEvent(event.event_id, 'date', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Start Time *
+                        </label>
+                        <input
+                          type="time"
+                          value={event.start_time}
+                          onChange={(e) => updateEvent(event.event_id, 'start_time', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          End Time
+                        </label>
+                        <input
+                          type="time"
+                          value={event.end_time}
+                          onChange={(e) => updateEvent(event.event_id, 'end_time', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                        />
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Venue Name *
+                        </label>
+                        <input
+                          type="text"
+                          value={event.venue_name}
+                          onChange={(e) => updateEvent(event.event_id, 'venue_name', e.target.value)}
+                          placeholder="e.g., Grand Ballroom, Hotel Name"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                          required
+                        />
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Venue Address *
+                        </label>
+                        <input
+                          type="text"
+                          value={event.venue_address}
+                          onChange={(e) => updateEvent(event.event_id, 'venue_address', e.target.value)}
+                          placeholder="Full address"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                          required
+                        />
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Google Maps Link *
+                        </label>
+                        <input
+                          type="url"
+                          value={event.map_link}
+                          onChange={(e) => updateEvent(event.event_id, 'map_link', e.target.value)}
+                          placeholder="https://maps.google.com/..."
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                          required
+                        />
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Description (max 200 chars)
+                        </label>
+                        <textarea
+                          value={event.description}
+                          onChange={(e) => updateEvent(event.event_id, 'description', e.target.value)}
+                          maxLength={200}
+                          rows={2}
+                          placeholder="Optional description of the event"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">{event.description?.length || 0}/200</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <Button
+              type="button"
+              onClick={addEvent}
+              disabled={formData.events.length >= 7}
+              variant="outline"
+              className="w-full border-gray-300 hover:bg-gray-50"
+            >
+              + Add Event {formData.events.length > 0 && `(${formData.events.length}/7)`}
+            </Button>
+          </Card>
+
           {/* Custom Text Overrides (Collapsible) */}
           <Card className="p-6">
             <div 
