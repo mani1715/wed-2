@@ -703,9 +703,9 @@ agent_communication:
     - message: "🎉 PHASE 7 INVITATION ANALYTICS & VIEW TRACKING BACKEND TESTING COMPLETE - ALL TESTS PASSED (5/5, 100% SUCCESS RATE)! Executed comprehensive testing of all Phase 7 analytics functionality using admin credentials (admin@wedding.com/admin123). ✅ VIEW TRACKING ENDPOINT: POST /api/invite/{slug}/view working perfectly - returns 204 status code, tracks mobile/desktop device types correctly, average response time 67ms (meets <100ms requirement), invalid slug returns 404. Created test profiles with realistic Indian wedding data (Rajesh Kumar & Priya Sharma). ✅ ANALYTICS RETRIEVAL: GET /api/admin/profiles/{profile_id}/analytics returns all required fields (profile_id, total_views, mobile_views, desktop_views, last_viewed_at), view counts match tracked views (1 mobile + 1 desktop = 2 total), invalid profile_id returns 404, no authentication returns 403. ✅ VIEW INCREMENT LOGIC: Multiple views increment correctly (tested 3 mobile + 2 desktop = 5 total views), mobile_views and desktop_views increment independently, last_viewed_at timestamp updates on each view. ✅ ZERO VIEWS CASE: New profiles that have never been viewed return zeros for all view counts and null for last_viewed_at. ✅ PERFORMANCE CHECK: Average response time 67ms meets performance requirements, maximum response time 71ms, doesn't block invitation loading (invitation loads in 66ms). All analytics endpoints working correctly. Privacy-first system with no cookies, no IP storage, no location tracking. Backend Phase 7 analytics system is production-ready and meets all review requirements!"
   - agent: "main"
     message: |
-      ✅ PHASE 8 - PRINTABLE PDF INVITATION IMPLEMENTED
+      ✅ PHASE 8 - PRINTABLE PDF INVITATION COMPLETE
       
-      Complete PDF generation system for wedding invitations.
+      Complete PDF generation system for wedding invitations with deity backgrounds.
       
       BACKEND IMPLEMENTATION:
       - Installed ReportLab library for server-side PDF generation
@@ -716,6 +716,10 @@ agent_communication:
         * Multi-language support (6 languages: English, Telugu, Hindi, Tamil, Kannada, Malayalam)
         * Clean typography with proper spacing and hierarchy
         * Professional layout optimized for printing
+        * DEITY BACKGROUND: Added optional deity/temple background with VERY LIGHT opacity (0.12)
+        * Background images optimized - resized to 800px max width, JPEG quality 70, compressed
+        * Deity images centered on page with aspect ratio preserved
+        * Background applied to all pages without interfering with text readability
       
       - PDF Content Included:
         * Wedding invitation title (language-specific)
