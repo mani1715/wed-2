@@ -150,6 +150,9 @@ const PublicInvitation = () => {
     try {
       const response = await axios.get(`${API_URL}/api/invite/${slug}`);
       setInvitation(response.data);
+      
+      // PHASE 7: Track view after content is fetched (privacy-first)
+      trackInvitationView();
     } catch (error) {
       console.error('Failed to fetch invitation:', error);
       if (error.response?.status === 410) {
@@ -161,6 +164,37 @@ const PublicInvitation = () => {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  // PHASE 7: Track invitation view (privacy-first, no blocking)
+  const trackInvitationView = () => {
+    try {
+      // Check if already viewed using localStorage
+      const viewKey = `invitation_viewed_${slug}`;
+      
+      if (localStorage.getItem(viewKey)) {
+        // Already tracked this view, skip
+        return;
+      }
+      
+      // Detect device type (mobile or desktop only)
+      const isMobile = window.innerWidth < 768;
+      const deviceType = isMobile ? 'mobile' : 'desktop';
+      
+      // Send view tracking request (non-blocking)
+      axios.post(`${API_URL}/api/invite/${slug}/view`, {
+        device_type: deviceType
+      }).catch(err => {
+        // Silent fail - don't disrupt user experience
+        console.debug('View tracking failed:', err);
+      });
+      
+      // Mark as viewed in localStorage to prevent duplicate tracking
+      localStorage.setItem(viewKey, 'true');
+    } catch (error) {
+      // Silent fail - don't disrupt user experience
+      console.debug('View tracking error:', error);
     }
   };
 
