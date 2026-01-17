@@ -90,6 +90,19 @@ class Profile(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     
+    @field_validator('events')
+    def validate_events(cls, v):
+        """Validate events list"""
+        if v is not None:
+            if len(v) > 7:
+                raise ValueError('Maximum 7 events allowed')
+            
+            # Check at least one visible event
+            visible_events = [e for e in v if e.visible]
+            if len(v) > 0 and len(visible_events) == 0:
+                raise ValueError('At least one event must be visible')
+        return v
+    
     @field_validator('whatsapp_groom', 'whatsapp_bride')
     def validate_whatsapp_number(cls, v):
         """Validate WhatsApp number is in E.164 format"""
