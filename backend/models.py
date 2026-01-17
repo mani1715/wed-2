@@ -86,6 +86,7 @@ class Profile(BaseModel):
     custom_text: Dict[str, Dict[str, str]] = Field(default_factory=dict)  # Custom text overrides {language: {section: text}}
     sections_enabled: SectionsEnabled = Field(default_factory=SectionsEnabled)
     background_music: BackgroundMusic = Field(default_factory=BackgroundMusic)  # Optional background music
+    map_settings: MapSettings = Field(default_factory=MapSettings)  # Map embed settings
     events: List[WeddingEvent] = Field(default_factory=list)  # Wedding events schedule
     link_expiry_type: str  # hours, days, permanent
     link_expiry_value: Optional[int] = None  # number of hours/days
