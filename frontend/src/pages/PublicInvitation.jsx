@@ -624,9 +624,23 @@ const PublicInvitation = () => {
                           {invitation.map_settings?.embed_enabled && (
                             <div className="hidden md:block mt-3 w-full h-64 rounded-lg overflow-hidden border border-gray-300">
                               <iframe
-                                src={event.map_link.includes('embed') 
-                                  ? event.map_link 
-                                  : event.map_link.replace('/maps/place/', '/maps/embed/v1/place?key=').replace('?', '&')}
+                                src={(() => {
+                                  // Convert regular Google Maps link to embed format
+                                  const url = event.map_link;
+                                  if (url.includes('google.com/maps')) {
+                                    // Extract coordinates or place info
+                                    if (url.includes('@')) {
+                                      // Has coordinates: extract them
+                                      const match = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+                                      if (match) {
+                                        return `https://maps.google.com/maps?q=${match[1]},${match[2]}&output=embed`;
+                                      }
+                                    }
+                                    // Try to use the full URL as query
+                                    return `https://maps.google.com/maps?q=${encodeURIComponent(event.venue_name + ' ' + event.venue_address)}&output=embed`;
+                                  }
+                                  return url;
+                                })()}
                                 width="100%"
                                 height="100%"
                                 style={{ border: 0 }}
