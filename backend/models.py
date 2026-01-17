@@ -494,3 +494,39 @@ class RSVPStats(BaseModel):
     not_attending_count: int
     maybe_count: int
     total_guest_count: int
+
+
+
+# PHASE 7 - Analytics Models
+class Analytics(BaseModel):
+    """Model for invitation view tracking"""
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    profile_id: str  # Reference to Profile
+    total_views: int = 0
+    mobile_views: int = 0
+    desktop_views: int = 0
+    last_viewed_at: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class ViewTrackingRequest(BaseModel):
+    """Request model for tracking a view"""
+    device_type: str  # mobile or desktop
+    
+    @field_validator('device_type')
+    def validate_device_type(cls, v):
+        """Validate device type is mobile or desktop"""
+        if v not in ['mobile', 'desktop']:
+            raise ValueError('device_type must be either "mobile" or "desktop"')
+        return v
+
+
+class AnalyticsResponse(BaseModel):
+    """Response model for analytics data"""
+    profile_id: str
+    total_views: int
+    mobile_views: int
+    desktop_views: int
+    last_viewed_at: Optional[datetime]
