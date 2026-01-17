@@ -232,6 +232,131 @@ const ProfileForm = () => {
     }));
   };
 
+  // Event Handlers
+  const generateEventId = () => {
+    return `evt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  };
+
+  const addDefaultEvents = () => {
+    const defaultEvents = [
+      { name: 'Mehendi', visible: true },
+      { name: 'Sangeet', visible: true },
+      { name: 'Wedding', visible: true },
+      { name: 'Reception', visible: true }
+    ];
+
+    const newEvents = defaultEvents.map((evt, index) => ({
+      event_id: generateEventId(),
+      name: evt.name,
+      date: '',
+      start_time: '',
+      end_time: '',
+      venue_name: '',
+      venue_address: '',
+      map_link: '',
+      description: '',
+      visible: evt.visible,
+      order: index
+    }));
+
+    setFormData(prev => ({
+      ...prev,
+      events: newEvents
+    }));
+  };
+
+  const addEvent = () => {
+    if (formData.events.length >= 7) {
+      alert('Maximum 7 events allowed');
+      return;
+    }
+
+    const newEvent = {
+      event_id: generateEventId(),
+      name: '',
+      date: '',
+      start_time: '',
+      end_time: '',
+      venue_name: '',
+      venue_address: '',
+      map_link: '',
+      description: '',
+      visible: true,
+      order: formData.events.length
+    };
+
+    setFormData(prev => ({
+      ...prev,
+      events: [...prev.events, newEvent]
+    }));
+  };
+
+  const updateEvent = (eventId, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      events: prev.events.map(evt =>
+        evt.event_id === eventId ? { ...evt, [field]: value } : evt
+      )
+    }));
+  };
+
+  const deleteEvent = (eventId) => {
+    const visibleEvents = formData.events.filter(e => e.visible && e.event_id !== eventId);
+    const eventToDelete = formData.events.find(e => e.event_id === eventId);
+    
+    if (visibleEvents.length === 0 && eventToDelete?.visible) {
+      alert('At least one event must be visible');
+      return;
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      events: prev.events.filter(evt => evt.event_id !== eventId)
+    }));
+  };
+
+  const toggleEventVisibility = (eventId) => {
+    const event = formData.events.find(e => e.event_id === eventId);
+    if (!event) return;
+
+    const visibleCount = formData.events.filter(e => e.visible).length;
+    
+    if (event.visible && visibleCount === 1) {
+      alert('At least one event must be visible');
+      return;
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      events: prev.events.map(evt =>
+        evt.event_id === eventId ? { ...evt, visible: !evt.visible } : evt
+      )
+    }));
+  };
+
+  const moveEvent = (eventId, direction) => {
+    const index = formData.events.findIndex(e => e.event_id === eventId);
+    if (index === -1) return;
+
+    const newEvents = [...formData.events];
+    
+    if (direction === 'up' && index > 0) {
+      [newEvents[index], newEvents[index - 1]] = [newEvents[index - 1], newEvents[index]];
+    } else if (direction === 'down' && index < newEvents.length - 1) {
+      [newEvents[index], newEvents[index + 1]] = [newEvents[index + 1], newEvents[index]];
+    }
+
+    // Update order numbers
+    newEvents.forEach((evt, idx) => {
+      evt.order = idx;
+    });
+
+    setFormData(prev => ({
+      ...prev,
+      events: newEvents
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
