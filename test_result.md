@@ -102,6 +102,111 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
+user_problem_statement: |
+  Add multi-event system for Indian wedding invitations with the following features:
+  - Admin can add up to 7 events (Mehendi, Sangeet, Wedding, Reception, etc.)
+  - Each event has: name, date, start/end time, venue, address, map link, description
+  - Events are sortable and have visibility toggle
+  - At least one event must be visible
+  - Guest view displays events in chronological order with map directions
+  - Clean, theme-independent design
+
+backend:
+  - task: "WeddingEvent Model"
+    implemented: true
+    working: "NA"
+    file: "backend/models.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Created WeddingEvent model with all required fields and validation"
+  
+  - task: "Profile Model Events Field"
+    implemented: true
+    working: "NA"
+    file: "backend/models.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Added events array field to Profile, ProfileCreate, ProfileUpdate, ProfileResponse models with validation for max 7 events and at least 1 visible"
+  
+  - task: "API Events Handling"
+    implemented: true
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Updated create_profile and get_invitation endpoints to handle events array properly"
+
+frontend:
+  - task: "Events Management UI in Profile Form"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/ProfileForm.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Added comprehensive events management section with add/edit/delete/reorder/visibility toggle. Includes default events button (Mehendi, Sangeet, Wedding, Reception)"
+  
+  - task: "Events Display in Public Invitation"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/PublicInvitation.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Added event schedule section that displays visible events in chronological order with map directions. Includes fallback for backward compatibility"
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "API Events Handling"
+    - "Events Management UI in Profile Form"
+    - "Events Display in Public Invitation"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: |
+      Implemented complete multi-event system for wedding invitations:
+      
+      BACKEND:
+      - Created WeddingEvent model with validation
+      - Added events array to Profile models
+      - Updated API endpoints to handle events
+      
+      FRONTEND:
+      - Added events management in admin profile form
+      - Default events prefill (Mehendi, Sangeet, Wedding, Reception)
+      - Event reordering, visibility toggle, delete functions
+      - Public view displays events chronologically with map links
+      - Backward compatible with existing profiles
+      
+      Ready for backend testing. Frontend will need user confirmation before testing.
+
 user_problem_statement: "Production-ready wedding & event invitation web platform with admin panel to create invitation profiles, generate unique shareable links, and allow guests to view invitations and submit greetings. UPDATED: Add design system with 8 selectable themes that control layout, colors, typography, and styling of invitation pages. PHASE 6: Add production-ready RSVP system with guest tracking, status filtering, CSV export, and duplicate prevention. Add optional background music feature with admin control, non-autoplay, guest toggle, and browser policy compliance."
 
 backend:
