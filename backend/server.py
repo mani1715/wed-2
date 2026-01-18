@@ -258,6 +258,11 @@ async def create_profile(profile_data: ProfileCreate, admin_id: str = Depends(ge
         profile_data.link_expiry_value
     )
     
+    # Sanitize HTML fields
+    about_couple = sanitize_html(profile_data.about_couple) if profile_data.about_couple else None
+    family_details = sanitize_html(profile_data.family_details) if profile_data.family_details else None
+    love_story = sanitize_html(profile_data.love_story) if profile_data.love_story else None
+    
     # Create profile object
     profile = Profile(
         slug=slug,
@@ -266,6 +271,8 @@ async def create_profile(profile_data: ProfileCreate, admin_id: str = Depends(ge
         event_type=profile_data.event_type,
         event_date=profile_data.event_date,
         venue=profile_data.venue,
+        city=profile_data.city,
+        invitation_message=profile_data.invitation_message,
         language=profile_data.language,
         design_id=profile_data.design_id,
         deity_id=profile_data.deity_id,
@@ -273,6 +280,10 @@ async def create_profile(profile_data: ProfileCreate, admin_id: str = Depends(ge
         whatsapp_bride=profile_data.whatsapp_bride,
         enabled_languages=profile_data.enabled_languages,
         custom_text=profile_data.custom_text,
+        about_couple=about_couple,
+        family_details=family_details,
+        love_story=love_story,
+        cover_photo_id=profile_data.cover_photo_id,
         sections_enabled=profile_data.sections_enabled,
         background_music=profile_data.background_music,
         map_settings=profile_data.map_settings,
