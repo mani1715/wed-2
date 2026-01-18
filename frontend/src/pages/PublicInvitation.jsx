@@ -1684,9 +1684,9 @@ const PublicInvitation = () => {
         </Card>
 
         {/* Contact Information Section */}
-        {invitation.sections_enabled.contact && invitation.contact_info && (
-          invitation.contact_info.groom_phone || invitation.contact_info.bride_phone || invitation.contact_info.emergency_phone || invitation.contact_info.email
-        ) && (
+        {invitation.sections_enabled.contact && invitation.contact_info && 
+         (invitation.contact_info.groom_phone || invitation.contact_info.bride_phone || 
+          invitation.contact_info.emergency_phone || invitation.contact_info.email) && (
           <Card 
             className="p-8 mb-8"
             style={{
