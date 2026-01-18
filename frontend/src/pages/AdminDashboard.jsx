@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import axios from 'axios';
-import { Plus, LogOut, ExternalLink, Copy, Edit, Trash2, Calendar, Clock, Palette, Church, Languages, Users, Eye, Smartphone, Monitor, Download, BarChart, MessageCircle } from 'lucide-react';
+import { Plus, LogOut, ExternalLink, Copy, Edit, Trash2, Calendar, Clock, Palette, Church, Languages, Users, Eye, Smartphone, Monitor, Download, BarChart, MessageCircle, QrCode } from 'lucide-react';
 import { DESIGN_THEMES } from '@/config/designThemes';
 import { DEITY_OPTIONS } from '@/config/religiousAssets';
 
@@ -365,6 +365,18 @@ const AdminDashboard = () => {
                       >
                         <BarChart className="w-4 h-4 mr-1" />
                         Analytics
+                      </Button>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => window.open(`${API_URL}/api/invite/${profile.slug}/qr`, '_blank')}
+                        className="flex-1 text-teal-600 hover:bg-teal-50"
+                        title="Download QR Code"
+                      >
+                        <QrCode className="w-4 h-4 mr-1" />
+                        QR Code
                       </Button>
                     </div>
                     <div className="flex gap-2">
