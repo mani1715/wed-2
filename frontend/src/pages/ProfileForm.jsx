@@ -970,57 +970,88 @@ const ProfileForm = () => {
 
                 {/* Photos Grid */}
                 {photos.length > 0 && (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {photos.map((photo) => (
-                      <div key={photo.id} className="relative group">
-                        {/* Photo */}
-                        <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 border-2 border-gray-200">
-                          <img
-                            src={`${API_URL}${photo.media_url}`}
-                            alt={photo.caption || 'Wedding photo'}
-                            className="w-full h-full object-cover"
+                  <>
+                    <p className="text-xs text-gray-600 mb-2">
+                      Use the arrow buttons to reorder photos. Drag them to change display order on the invitation.
+                    </p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {photos.map((photo, index) => (
+                        <div key={photo.id} className="relative group">
+                          {/* Photo */}
+                          <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 border-2 border-gray-200">
+                            <img
+                              src={`${API_URL}${photo.media_url}`}
+                              alt={photo.caption || 'Wedding photo'}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+
+                          {/* Cover Badge */}
+                          {photo.is_cover && (
+                            <div className="absolute top-2 left-2 bg-yellow-500 text-white px-2 py-1 rounded-md flex items-center gap-1 text-xs font-semibold z-10">
+                              <Star className="w-3 h-3" />
+                              Cover
+                            </div>
+                          )}
+
+                          {/* Reorder Buttons - Bottom Left */}
+                          <div className="absolute bottom-2 left-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                            <button
+                              type="button"
+                              onClick={() => handleMovePhoto(photo.id, 'up')}
+                              disabled={index === 0}
+                              className={`p-1.5 bg-white rounded-full shadow-md ${
+                                index === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-50'
+                              }`}
+                              title="Move left"
+                            >
+                              <ChevronLeft className="w-4 h-4 text-blue-600" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleMovePhoto(photo.id, 'down')}
+                              disabled={index === photos.length - 1}
+                              className={`p-1.5 bg-white rounded-full shadow-md ${
+                                index === photos.length - 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-50'
+                              }`}
+                              title="Move right"
+                            >
+                              <ChevronRight className="w-4 h-4 text-blue-600" />
+                            </button>
+                          </div>
+
+                          {/* Action Buttons - Top Right */}
+                          <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                            <button
+                              type="button"
+                              onClick={() => handleSetCoverPhoto(photo.id)}
+                              className="p-1.5 bg-white rounded-full shadow-md hover:bg-yellow-50"
+                              title="Set as cover"
+                            >
+                              <Star className={`w-4 h-4 ${photo.is_cover ? 'text-yellow-500 fill-yellow-500' : 'text-gray-600'}`} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeletePhoto(photo.id)}
+                              className="p-1.5 bg-white rounded-full shadow-md hover:bg-red-50"
+                              title="Delete"
+                            >
+                              <X className="w-4 h-4 text-red-600" />
+                            </button>
+                          </div>
+
+                          {/* Caption */}
+                          <input
+                            type="text"
+                            value={photo.caption || ''}
+                            onChange={(e) => handleUpdateCaption(photo.id, e.target.value)}
+                            placeholder="Add caption..."
+                            className="w-full mt-2 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
                           />
                         </div>
-
-                        {/* Cover Badge */}
-                        {photo.is_cover && (
-                          <div className="absolute top-2 left-2 bg-yellow-500 text-white px-2 py-1 rounded-md flex items-center gap-1 text-xs font-semibold">
-                            <Star className="w-3 h-3" />
-                            Cover
-                          </div>
-                        )}
-
-                        {/* Action Buttons */}
-                        <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button
-                            type="button"
-                            onClick={() => handleSetCoverPhoto(photo.id)}
-                            className="p-1.5 bg-white rounded-full shadow-md hover:bg-yellow-50"
-                            title="Set as cover"
-                          >
-                            <Star className={`w-4 h-4 ${photo.is_cover ? 'text-yellow-500 fill-yellow-500' : 'text-gray-600'}`} />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDeletePhoto(photo.id)}
-                            className="p-1.5 bg-white rounded-full shadow-md hover:bg-red-50"
-                            title="Delete"
-                          >
-                            <X className="w-4 h-4 text-red-600" />
-                          </button>
-                        </div>
-
-                        {/* Caption */}
-                        <input
-                          type="text"
-                          value={photo.caption || ''}
-                          onChange={(e) => handleUpdateCaption(photo.id, e.target.value)}
-                          placeholder="Add caption..."
-                          className="w-full mt-2 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
-                        />
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  </>
                 )}
 
                 {photos.length === 0 && (
