@@ -102,6 +102,14 @@ const PublicInvitation = () => {
   const [rsvpSuccess, setRsvpSuccess] = useState(false);
   const [rsvpError, setRsvpError] = useState('');
   const [submittedRsvpStatus, setSubmittedRsvpStatus] = useState('');
+  
+  // PHASE 11: RSVP Check & Edit functionality
+  const [checkingRsvp, setCheckingRsvp] = useState(false);
+  const [existingRsvp, setExistingRsvp] = useState(null);
+  const [canEditRsvp, setCanEditRsvp] = useState(false);
+  const [hoursRemaining, setHoursRemaining] = useState(0);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [checkPhone, setCheckPhone] = useState('');
 
   useEffect(() => {
     fetchInvitation();
