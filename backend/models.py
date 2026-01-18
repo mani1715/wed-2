@@ -374,6 +374,9 @@ class ProfileMedia(BaseModel):
     media_url: str
     caption: Optional[str] = None
     order: int = 0
+    is_cover: bool = False  # Mark as cover photo
+    file_size: Optional[int] = None  # Size in bytes
+    original_filename: Optional[str] = None  # Original upload name
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
