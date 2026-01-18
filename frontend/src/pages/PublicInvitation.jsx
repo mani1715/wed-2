@@ -1487,7 +1487,6 @@ const PublicInvitation = () => {
               )}
 
             <form onSubmit={handleSubmitRSVP} className="space-y-4">
-            <form onSubmit={handleSubmitRSVP} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text, #4A3728)' }}>
                   Your Name *
@@ -1515,16 +1514,18 @@ const PublicInvitation = () => {
                   value={rsvpData.guest_phone}
                   onChange={(e) => setRsvpData(prev => ({ ...prev, guest_phone: e.target.value }))}
                   required
+                  disabled={isEditMode}
                   placeholder="+91 98765 43210"
                   className="w-full px-4 py-2 border rounded-md"
                   style={{
                     borderColor: 'var(--color-accent, #C9A961)',
-                    background: 'var(--color-background, #FFF8E7)',
-                    color: 'var(--color-text, #4A3728)'
+                    background: isEditMode ? '#f5f5f5' : 'var(--color-background, #FFF8E7)',
+                    color: 'var(--color-text, #4A3728)',
+                    opacity: isEditMode ? 0.7 : 1
                   }}
                 />
                 <p className="text-xs mt-1" style={{ color: 'var(--color-accent, #C9A961)' }}>
-                  Format: +[country code][number]
+                  {isEditMode ? 'Phone number cannot be changed' : 'Format: +[country code][number]'}
                 </p>
               </div>
 
@@ -1543,7 +1544,6 @@ const PublicInvitation = () => {
                       type="button"
                       onClick={() => {
                         setRsvpData(prev => ({ ...prev, status: option.value }));
-                        // PHASE 9: Track RSVP button click
                         trackInteraction('rsvp_click');
                       }}
                       className="px-4 py-3 rounded-md text-sm font-medium transition-all"
@@ -1592,8 +1592,8 @@ const PublicInvitation = () => {
                 <textarea
                   value={rsvpData.message}
                   onChange={(e) => setRsvpData(prev => ({ ...prev, message: e.target.value.slice(0, 250) }))}
-                  maxLength={250}
                   rows="3"
+                  maxLength="250"
                   className="w-full px-4 py-2 border rounded-md"
                   style={{
                     borderColor: 'var(--color-accent, #C9A961)',
@@ -1619,17 +1619,40 @@ const PublicInvitation = () => {
                 </p>
               )}
 
-              <Button
-                type="submit"
-                disabled={rsvpSubmitting || !navigator.onLine}
-                className="w-full text-white"
-                style={{
-                  background: 'var(--color-primary, #8B7355)',
-                  opacity: (rsvpSubmitting || !navigator.onLine) ? 0.6 : 1
-                }}
-              >
-                {rsvpSubmitting ? 'Submitting...' : 'Submit RSVP'}
-              </Button>
+              <div className="flex gap-2">
+                {isEditMode && (
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      setIsEditMode(false);
+                      setExistingRsvp(null);
+                      setCheckPhone('');
+                      setRsvpData({
+                        guest_name: '',
+                        guest_phone: '',
+                        status: 'yes',
+                        guest_count: 1,
+                        message: ''
+                      });
+                    }}
+                    className="text-sm"
+                    style={{ background: '#6c757d', color: 'white' }}
+                  >
+                    Cancel
+                  </Button>
+                )}
+                <Button
+                  type="submit"
+                  disabled={rsvpSubmitting || !navigator.onLine}
+                  className="flex-1 text-white"
+                  style={{
+                    background: 'var(--color-primary, #8B7355)',
+                    opacity: (rsvpSubmitting || !navigator.onLine) ? 0.6 : 1
+                  }}
+                >
+                  {rsvpSubmitting ? 'Submitting...' : (isEditMode ? 'Update RSVP' : 'Submit RSVP')}
+                </Button>
+              </div>
             </form>
           ) : (
             <div className="text-center py-8">
