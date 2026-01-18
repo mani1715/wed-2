@@ -1655,7 +1655,10 @@ const PublicInvitation = () => {
               </div>
             </form>
             </>
-          ) : (
+          )}
+
+          {/* RSVP Success Message */}
+          {rsvpSuccess && (
             <div className="text-center py-8">
               <div className="text-6xl mb-4">
                 {submittedRsvpStatus === 'yes' && '✓'}
