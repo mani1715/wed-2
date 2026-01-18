@@ -670,6 +670,7 @@ async def get_invitation(slug: str):
         sections_enabled=SectionsEnabled(**profile['sections_enabled']),
         background_music=BackgroundMusic(**profile.get('background_music', {'enabled': False, 'file_url': None})),
         map_settings=MapSettings(**profile.get('map_settings', {'embed_enabled': False})),
+        contact_info=ContactInfo(**profile.get('contact_info', {})),  # PHASE 11: Contact information
         events=[WeddingEvent(**e) for e in profile.get('events', [])],
         media=[ProfileMedia(**m) for m in media_list],
         greetings=[GreetingResponse(**g) for g in greetings_list]
