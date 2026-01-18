@@ -1714,6 +1714,148 @@ async def get_languages():
     return languages
 
 
+
+# ==================== PHASE 11: QR CODE & CALENDAR ROUTES ====================
+
+@api_router.get("/invite/{slug}/qr")
+async def generate_qr_code(slug: str):
+    """PHASE 11: Generate QR code for invitation link"""
+    profile = await db.profiles.find_one({"slug": slug}, {"_id": 0})
+    
+    if not profile:
+        raise HTTPException(status_code=404, detail="Invitation not found")
+    
+    # Generate QR code using qrcode library
+    import qrcode
+    from io import BytesIO
+    
+    # Build invitation URL
+    invitation_url = f"https://wedding-central-5.preview.emergentagent.com/invite/{slug}"
+    
+    # Create QR code
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(invitation_url)
+    qr.make(fit=True)
+    
+    img = qr.make_image(fill_color="black", back_color="white")
+    
+    # Convert to bytes
+    img_bytes = BytesIO()
+    img.save(img_bytes, format='PNG')
+    img_bytes.seek(0)
+    
+    return StreamingResponse(img_bytes, media_type="image/png")
+
+
+@api_router.get("/invite/{slug}/calendar")
+async def download_calendar(slug: str):
+    """PHASE 11: Generate .ics calendar file for wedding events"""
+    profile = await db.profiles.find_one({"slug": slug}, {"_id": 0})
+    
+    if not profile:
+        raise HTTPException(status_code=404, detail="Invitation not found")
+    
+    if not await check_profile_active(profile):
+        raise HTTPException(status_code=410, detail="This invitation link has expired")
+    
+    # Convert date string if needed
+    if isinstance(profile.get('event_date'), str):
+        profile['event_date'] = datetime.fromisoformat(profile['event_date'])
+    
+    # Get events
+    events = profile.get('events', [])
+    
+    # Build .ics file content
+    ics_lines = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Wedding Invitation//EN",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH"
+    ]
+    
+    # If events exist, use those; otherwise use main event_date
+    if events and len(events) > 0:
+        for event in events:
+            if not event.get('visible', True):
+                continue
+            
+            # Parse event date and time
+            event_date = datetime.strptime(event['date'], '%Y-%m-%d')
+            start_time_parts = event['start_time'].split(':')
+            event_datetime = event_date.replace(
+                hour=int(start_time_parts[0]),
+                minute=int(start_time_parts[1])
+            )
+            
+            # End time (default to 2 hours later if not specified)
+            if event.get('end_time'):
+                end_time_parts = event['end_time'].split(':')
+                end_datetime = event_date.replace(
+                    hour=int(end_time_parts[0]),
+                    minute=int(end_time_parts[1])
+                )
+            else:
+                end_datetime = event_datetime + timedelta(hours=2)
+            
+            # Format dates for .ics
+            dtstart = event_datetime.strftime('%Y%m%dT%H%M%S')
+            dtend = end_datetime.strftime('%Y%m%dT%H%M%S')
+            
+            ics_lines.extend([
+                "BEGIN:VEVENT",
+                f"UID:{event.get('event_id', str(uuid.uuid4()))}@wedding-invitation",
+                f"DTSTAMP:{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}",
+                f"DTSTART:{dtstart}",
+                f"DTEND:{dtend}",
+                f"SUMMARY:{event['name']} - {profile['groom_name']} & {profile['bride_name']}",
+                f"LOCATION:{event['venue_name']}, {event['venue_address']}",
+                f"DESCRIPTION:{event.get('description', '')}",
+                "STATUS:CONFIRMED",
+                "END:VEVENT"
+            ])
+    else:
+        # Use main event_date
+        event_datetime = profile['event_date']
+        end_datetime = event_datetime + timedelta(hours=4)
+        
+        dtstart = event_datetime.strftime('%Y%m%dT%H%M%S')
+        dtend = end_datetime.strftime('%Y%m%dT%H%M%S')
+        
+        ics_lines.extend([
+            "BEGIN:VEVENT",
+            f"UID:{profile['id']}@wedding-invitation",
+            f"DTSTAMP:{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}",
+            f"DTSTART:{dtstart}",
+            f"DTEND:{dtend}",
+            f"SUMMARY:{profile['event_type'].title()} - {profile['groom_name']} & {profile['bride_name']}",
+            f"LOCATION:{profile['venue']}, {profile.get('city', '')}",
+            f"DESCRIPTION:Join us for our {profile['event_type']}",
+            "STATUS:CONFIRMED",
+            "END:VEVENT"
+        ])
+    
+    ics_lines.append("END:VCALENDAR")
+    ics_content = "\r\n".join(ics_lines)
+    
+    # Return as downloadable file
+    from fastapi.responses import Response
+    filename = f"wedding-{profile['groom_name']}-{profile['bride_name']}.ics".replace(" ", "-").lower()
+    
+    return Response(
+        content=ics_content,
+        media_type="text/calendar",
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"'
+        }
+    )
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
