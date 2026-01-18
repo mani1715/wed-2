@@ -496,6 +496,7 @@ class InvitationPublicView(BaseModel):
     sections_enabled: SectionsEnabled
     background_music: BackgroundMusic
     map_settings: MapSettings
+    contact_info: ContactInfo  # PHASE 11: Contact information
     events: List[WeddingEvent]
     media: List[ProfileMedia]
     greetings: List[GreetingResponse]
