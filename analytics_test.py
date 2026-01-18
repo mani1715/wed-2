@@ -19,7 +19,7 @@ import sys
 import traceback
 
 # Configuration
-BASE_URL = "https://wedding-invite-38.preview.emergentagent.com/api"
+BASE_URL = "https://nuptials-hub-1.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@wedding.com"
 ADMIN_PASSWORD = "admin123"
 
