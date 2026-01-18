@@ -1731,7 +1731,7 @@ async def generate_qr_code(slug: str):
     from io import BytesIO
     
     # Build invitation URL
-    invitation_url = f"https://wedding-portal-25.preview.emergentagent.com/invite/{slug}"
+    invitation_url = f"https://wedding-planner-113.preview.emergentagent.com/invite/{slug}"
     
     # Create QR code
     qr = qrcode.QRCode(
