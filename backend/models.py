@@ -75,6 +75,23 @@ class MapSettings(BaseModel):
     embed_enabled: bool = False  # Default OFF (safe default)
 
 
+class ContactInfo(BaseModel):
+    """PHASE 11: Contact information for the wedding"""
+    groom_phone: Optional[str] = None  # Groom family phone
+    bride_phone: Optional[str] = None  # Bride family phone
+    emergency_phone: Optional[str] = None  # Emergency contact
+    email: Optional[str] = None  # Contact email
+    
+    @field_validator('groom_phone', 'bride_phone', 'emergency_phone')
+    def validate_phone(cls, v):
+        """Validate phone number is in E.164 format"""
+        if v is not None and v.strip():
+            pattern = r'^\+[1-9]\d{1,14}$'
+            if not re.match(pattern, v):
+                raise ValueError('Phone number must be in E.164 format (e.g., +919876543210)')
+        return v
+
+
 class Profile(BaseModel):
     model_config = ConfigDict(extra="ignore")
     
