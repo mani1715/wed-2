@@ -703,6 +703,41 @@ const ProfileForm = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
                 />
               </div>
+
+              {/* City and Invitation Message */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    City
+                  </label>
+                  <input
+                    type="text"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
+                    placeholder="City or location"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Short Welcome Message
+                  <span className="text-xs text-gray-500 ml-2">
+                    ({(formData.invitation_message || '').length}/200)
+                  </span>
+                </label>
+                <textarea
+                  name="invitation_message"
+                  value={formData.invitation_message}
+                  onChange={handleChange}
+                  maxLength={200}
+                  rows="2"
+                  placeholder="A brief welcome message for your guests (optional)"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
+                />
+              </div>
             </div>
           </Card>
 
