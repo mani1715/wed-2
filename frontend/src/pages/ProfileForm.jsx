@@ -625,15 +625,6 @@ const ProfileForm = () => {
     }
   };
 
-  const handlePreview = () => {
-    const slug = savedProfile?.slug || (isEdit && formData.slug);
-    if (slug) {
-      window.open(`/invite/${slug}`, '_blank');
-    } else {
-      alert('Please save the profile first to generate a preview link.');
-    }
-  };
-
   const handleCopyLink = () => {
     const link = savedProfile?.invitation_link;
     if (link) {
