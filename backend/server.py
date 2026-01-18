@@ -715,16 +715,28 @@ async def submit_greeting(slug: str, greeting_data: GreetingCreate):
 
 
 @api_router.get("/admin/profiles/{profile_id}/greetings", response_model=List[GreetingResponse])
-async def get_profile_greetings(profile_id: str, admin_id: str = Depends(get_current_admin)):
-    """Get all greetings for a profile"""
+async def get_profile_greetings(
+    profile_id: str, 
+    status: Optional[str] = None,
+    admin_id: str = Depends(get_current_admin)
+):
+    """PHASE 11: Get all greetings for a profile with optional status filter"""
+    # Build query filter
+    query_filter = {"profile_id": profile_id}
+    if status and status in ['pending', 'approved', 'rejected']:
+        query_filter["approval_status"] = status
+    
     greetings = await db.greetings.find(
-        {"profile_id": profile_id},
+        query_filter,
         {"_id": 0}
     ).sort("created_at", -1).to_list(1000)
     
     for greeting in greetings:
         if isinstance(greeting.get('created_at'), str):
             greeting['created_at'] = datetime.fromisoformat(greeting['created_at'])
+        # Set default approval_status for old greetings without this field
+        if 'approval_status' not in greeting:
+            greeting['approval_status'] = 'approved'
     
     return [GreetingResponse(**g) for g in greetings]
 
