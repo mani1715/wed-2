@@ -694,6 +694,80 @@ test_plan:
   phase_7_verification_complete: true
   phase_8_pdf_generation_implemented: true
   phase_9_enhanced_analytics_implemented: true
+  phase_10_admin_cms_implemented: true
+
+backend:
+  - task: "PHASE 10 - CMS Backend Models & Fields"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/models.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "✅ PHASE 10 BACKEND MODELS UPDATED: Added city, invitation_message, about_couple, family_details, love_story, cover_photo_id fields to Profile models. Updated SectionsEnabled with about, family, love_story, rsvp toggles (all default false). Updated ProfileMedia with is_cover, file_size, original_filename fields. All validation rules implemented."
+
+  - task: "PHASE 10 - Photo Upload & Management APIs"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "✅ PHASE 10 PHOTO APIS IMPLEMENTED: POST /api/admin/profiles/{id}/upload-photo (multipart with WebP conversion, 5MB limit, validation). PUT /api/admin/media/{id}/set-cover (sets is_cover flag, unsets others). POST /api/admin/profiles/{id}/reorder-media (updates photo order). PUT /api/admin/media/{id}/caption (updates photo caption). Static files mounted at /uploads. HTML sanitization with bleach library."
+
+frontend:
+  - task: "PHASE 10 - ProfileForm CMS UI"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/ProfileForm.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "✅ PHASE 10 ADMIN CMS UI COMPLETE: Added city & invitation_message fields in basic details. Added 3 rich text sections with RichTextEditor (About Couple, Family Details, Love Story) with enable toggles. Complete photo management: upload up to 20 photos (5MB max), cover photo selection with star badge, photo reordering with left/right arrow buttons, caption editing, delete photos. RSVP toggle added to sections_enabled. Preview button opens invitation in new tab. All fields properly validated."
+
+  - task: "PHASE 10 - PublicInvitation Content Sections"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/PublicInvitation.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "✅ PHASE 10 PUBLIC PAGE UPDATES: Added cover photo hero section with couple names overlay and invitation message (positioned at top, 60vh height, responsive). Added About Couple section (rich HTML render). Added Family Details section (rich HTML render). Added Love Story section (rich HTML render). RSVP section now conditionally rendered based on sections_enabled.rsvp. Section order: Cover Photo → Language Switcher → Opening → Welcome → Couple → About → Family → Love Story → Events → Photos → Video → RSVP (if enabled) → Greetings → Footer. All sections respect theme styling."
+
+  - task: "PHASE 10 - RichTextEditor Component"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/RichTextEditor.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "✅ PHASE 10 RICH TEXT EDITOR: Created simple contenteditable-based RichTextEditor component with formatting toolbar (Bold, Italic, Underline, Bullet List, Numbered List). Includes enable/disable toggle. Min height 150px, max height 300px with scroll. Used in ProfileForm for About, Family, Love Story sections."
+
+test_plan:
+  current_focus:
+    - "PHASE 10 - CMS Backend Models & Fields"
+    - "PHASE 10 - Photo Upload & Management APIs"
+    - "PHASE 10 - ProfileForm CMS UI"
+    - "PHASE 10 - PublicInvitation Content Sections"
+    - "PHASE 10 - RichTextEditor Component"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
 
 agent_communication:
     - agent: "main"
