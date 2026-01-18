@@ -174,6 +174,8 @@ class ProfileCreate(BaseModel):
     event_type: str
     event_date: datetime
     venue: str
+    city: Optional[str] = None
+    invitation_message: Optional[str] = None
     language: List[str] = ["english"]
     design_id: str = "royal_classic"
     deity_id: Optional[str] = None
@@ -181,6 +183,10 @@ class ProfileCreate(BaseModel):
     whatsapp_bride: Optional[str] = None
     enabled_languages: List[str] = Field(default=["english"])
     custom_text: Dict[str, Dict[str, str]] = Field(default_factory=dict)
+    about_couple: Optional[str] = None
+    family_details: Optional[str] = None
+    love_story: Optional[str] = None
+    cover_photo_id: Optional[str] = None
     sections_enabled: SectionsEnabled = Field(default_factory=SectionsEnabled)
     background_music: BackgroundMusic = Field(default_factory=BackgroundMusic)
     map_settings: MapSettings = Field(default_factory=MapSettings)
