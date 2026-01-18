@@ -1375,6 +1375,7 @@ const PublicInvitation = () => {
             </div>
           )}
         </Card>
+        )}
 
         {/* Footer Section */}
         {invitation.sections_enabled.footer && (
