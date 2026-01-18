@@ -1678,7 +1678,7 @@ const PublicInvitation = () => {
             </div>
           )}
         </Card>
-        }
+        )}
 
         {/* Contact Information Section */}
         {invitation.sections_enabled.contact && invitation.contact_info && (
