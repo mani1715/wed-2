@@ -463,6 +463,55 @@ const PublicInvitation = () => {
       >
         <div className="container mx-auto px-4 max-w-4xl">
         
+        {/* Cover Photo Hero Section */}
+        {invitation.cover_photo_id && (() => {
+          const coverPhoto = invitation.media.find(m => m.id === invitation.cover_photo_id);
+          return coverPhoto ? (
+            <div 
+              className="relative w-full mb-8 rounded-lg overflow-hidden shadow-2xl"
+              style={{
+                height: '60vh',
+                minHeight: '400px',
+                maxHeight: '600px'
+              }}
+            >
+              <img
+                src={`${API_URL}${coverPhoto.media_url}`}
+                alt="Cover"
+                className="w-full h-full object-cover"
+              />
+              {/* Overlay with couple names */}
+              <div 
+                className="absolute inset-0 flex flex-col items-center justify-center"
+                style={{
+                  background: 'linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.5))'
+                }}
+              >
+                <h1 
+                  className="text-4xl md:text-6xl font-bold mb-4 text-white text-center px-4"
+                  style={{ 
+                    fontFamily: 'var(--font-heading, "Cinzel", serif)',
+                    textShadow: '2px 2px 8px rgba(0,0,0,0.5)'
+                  }}
+                >
+                  {invitation.groom_name} & {invitation.bride_name}
+                </h1>
+                {invitation.invitation_message && (
+                  <p 
+                    className="text-lg md:text-xl text-white text-center px-6 max-w-2xl"
+                    style={{ 
+                      textShadow: '1px 1px 4px rgba(0,0,0,0.5)',
+                      fontFamily: 'var(--font-body, "Lora", serif)'
+                    }}
+                  >
+                    {invitation.invitation_message}
+                  </p>
+                )}
+              </div>
+            </div>
+          ) : null;
+        })()}
+
         {/* Music Player Icon - Fixed Position */}
         {invitation.background_music && invitation.background_music.enabled && invitation.background_music.file_url && (
           <button
