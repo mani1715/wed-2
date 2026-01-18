@@ -805,13 +805,41 @@ async def submit_rsvp(slug: str, rsvp_data: RSVPCreate):
     existing_rsvp = await db.rsvps.find_one({
         "profile_id": profile['id'],
         "guest_phone": rsvp_data.guest_phone
-    })
+    }, {"_id": 0})
     
     if existing_rsvp:
-        raise HTTPException(
-            status_code=400,
-            detail="You have already submitted an RSVP for this invitation"
-        )
+        # PHASE 11: Check if within 48 hours - allow update instead
+        if isinstance(existing_rsvp.get('created_at'), str):
+            created_at = datetime.fromisoformat(existing_rsvp['created_at'])
+        else:
+            created_at = existing_rsvp['created_at']
+        
+        time_since_creation = datetime.now(timezone.utc) - created_at
+        if time_since_creation <= timedelta(hours=48):
+            # Update existing RSVP
+            update_doc = {
+                "guest_name": rsvp_data.guest_name,
+                "status": rsvp_data.status,
+                "guest_count": rsvp_data.guest_count,
+                "message": rsvp_data.message
+            }
+            
+            await db.rsvps.update_one(
+                {"id": existing_rsvp['id']},
+                {"$set": update_doc}
+            )
+            
+            # Fetch updated RSVP
+            updated_rsvp = await db.rsvps.find_one({"id": existing_rsvp['id']}, {"_id": 0})
+            if isinstance(updated_rsvp.get('created_at'), str):
+                updated_rsvp['created_at'] = datetime.fromisoformat(updated_rsvp['created_at'])
+            
+            return RSVPResponse(**updated_rsvp)
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail="You have already submitted an RSVP. Edits are only allowed within 48 hours of submission."
+            )
     
     # Create RSVP
     rsvp = RSVP(
