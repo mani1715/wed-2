@@ -371,6 +371,17 @@ const AdminDashboard = () => {
                       <Button
                         variant="outline"
                         size="sm"
+                        onClick={() => navigate(`/admin/profile/${profile.id}/greetings`)}
+                        className="flex-1 text-purple-600 hover:bg-purple-50"
+                      >
+                        <MessageCircle className="w-4 h-4 mr-1" />
+                        Greetings
+                      </Button>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => handleDelete(profile.id)}
                         className="flex-1 text-red-600 hover:bg-red-50"
                       >
