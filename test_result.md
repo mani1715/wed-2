@@ -697,6 +697,46 @@ test_plan:
 
 agent_communication:
     - agent: "main"
+      message: |
+        🔄 PHASE 9 - ENHANCED ANALYTICS & INSIGHTS - VERIFICATION COMPLETE
+        
+        User requested completion of PHASE 9 analytics features. Performed comprehensive verification of codebase:
+        
+        ✅ BACKEND FULLY IMPLEMENTED (Phase 9):
+        - Enhanced Analytics model with all required fields (total_views, unique_views, device breakdown including tablet, time tracking, daily_views, hourly_distribution, language_views, interaction counts)
+        - ViewSession model for 24-hour session-based unique visitor tracking
+        - POST /api/invite/{slug}/view - Enhanced with tablet detection and session tracking
+        - POST /api/invite/{slug}/track-language - Language usage tracking
+        - POST /api/invite/{slug}/track-interaction - Interaction tracking (map/RSVP/music)
+        - GET /api/admin/profiles/{id}/analytics - Detailed analytics endpoint
+        - GET /api/admin/profiles/{id}/analytics/summary - Summary with date range filter (7d/30d/all)
+        
+        ✅ FRONTEND FULLY IMPLEMENTED (Phase 9):
+        - AnalyticsPage.jsx with comprehensive dashboard (summary cards, charts, date range filter)
+        - PublicInvitation.jsx with all tracking integrations (view, language, interactions)
+        - Recharts library for visualizations (line, bar, pie charts)
+        - Non-blocking tracking (fire-and-forget pattern)
+        
+        ✅ MISSING COMPONENT ADDED:
+        - Analytics button with BarChart icon added to AdminDashboard.jsx
+        - Button navigates to /admin/profile/{profileId}/analytics
+        - Styled with indigo theme, placed after Download PDF button
+        
+        ALL PHASE 9 REQUIREMENTS MET:
+        ✅ Total views + unique visitors (session-based, 24hr window)
+        ✅ Device breakdown (mobile/desktop/tablet)
+        ✅ First & last viewed timestamps
+        ✅ Views per day (last 30 days tracked)
+        ✅ Peak viewing time (hourly distribution)
+        ✅ Language usage tracking with most viewed language
+        ✅ Event interactions (map clicks, RSVP clicks, music play/pause)
+        ✅ Anonymous tracking (no personal data, no IP storage, GDPR-safe)
+        ✅ Admin-only analytics dashboard with charts
+        ✅ Date range filter (7d/30d/all time)
+        ✅ Non-blocking performance (tracking after page render)
+        
+        READY FOR BACKEND TESTING to verify all analytics endpoints and tracking functionality.
+    - agent: "main"
     - message: "Complete production-ready wedding invitation platform implemented. Backend has full CRUD APIs for profiles, media management, and public invitation viewing with greeting submission. Frontend has landing page, admin login, dashboard with profile management, create/edit forms, and public invitation viewer. Admin user initialized (admin@wedding.com / admin123). All components follow config-driven architecture with section toggles, multi-language support, and link expiry control. Ready for comprehensive testing."
     - agent: "main"
     - message: "PHASE 3 VERIFICATION IN PROGRESS: Checking all deity/religious background layer implementation. Verified: 1) Backend deity_id field exists with validation for allowed values (ganesha, venkateswara_padmavati, shiva_parvati, lakshmi_vishnu, none, null). 2) religiousAssets.js config exists with 5 deity options (none + 4 deities) with progressive image paths. 3) ProfileForm deity selection UI exists with 5 cards showing name, description, thumbnail. 4) PublicInvitation has DeityBackground component with progressive loading, fixed position z-index 0, opacity 0.2. 5) All deity assets exist in /app/frontend/public/assets/deities/ with WebP and JPG formats. 6) Main content wrapper has z-index 1. Implementation appears complete. Running backend testing to verify deity_id CRUD operations."
