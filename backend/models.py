@@ -419,6 +419,8 @@ class InvitationPublicView(BaseModel):
     event_type: str
     event_date: datetime
     venue: str
+    city: Optional[str]
+    invitation_message: Optional[str]
     language: List[str]
     design_id: str
     deity_id: Optional[str]
@@ -426,6 +428,10 @@ class InvitationPublicView(BaseModel):
     whatsapp_bride: Optional[str]
     enabled_languages: List[str]
     custom_text: Dict[str, Dict[str, str]]
+    about_couple: Optional[str]
+    family_details: Optional[str]
+    love_story: Optional[str]
+    cover_photo_id: Optional[str]
     sections_enabled: SectionsEnabled
     background_music: BackgroundMusic
     map_settings: MapSettings
