@@ -1120,6 +1120,79 @@ const ProfileForm = () => {
             </div>
           </Card>
 
+          {/* Contact Information */}
+          <Card className="p-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Contact Information (Optional)</h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Provide contact details for guests to reach you. Phone numbers should include country code (e.g., +91 for India).
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Groom Family Phone
+                </label>
+                <input
+                  type="tel"
+                  value={formData.contact_info.groom_phone}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    contact_info: { ...prev.contact_info, groom_phone: e.target.value }
+                  }))}
+                  placeholder="+91 98765 43210"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">Format: +[country code][number]</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Bride Family Phone
+                </label>
+                <input
+                  type="tel"
+                  value={formData.contact_info.bride_phone}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    contact_info: { ...prev.contact_info, bride_phone: e.target.value }
+                  }))}
+                  placeholder="+91 98765 43210"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">Format: +[country code][number]</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Emergency Contact
+                </label>
+                <input
+                  type="tel"
+                  value={formData.contact_info.emergency_phone}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    contact_info: { ...prev.contact_info, emergency_phone: e.target.value }
+                  }))}
+                  placeholder="+91 98765 43210"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">Format: +[country code][number]</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Contact Email
+                </label>
+                <input
+                  type="email"
+                  value={formData.contact_info.email}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    contact_info: { ...prev.contact_info, email: e.target.value }
+                  }))}
+                  placeholder="contact@example.com"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-rose-500"
+                />
+              </div>
+            </div>
+          </Card>
+
           {/* Sections Enabled */}
           <Card className="p-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">Enable/Disable Sections</h2>
