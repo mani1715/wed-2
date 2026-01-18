@@ -51,9 +51,13 @@ class SectionsEnabled(BaseModel):
     opening: bool = True
     welcome: bool = True
     couple: bool = True
+    about: bool = False  # About couple section
+    family: bool = False  # Family details section
+    love_story: bool = False  # Love story section
     photos: bool = True
     video: bool = False
     events: bool = True
+    rsvp: bool = False  # RSVP section (default DISABLED)
     greetings: bool = True
     footer: bool = True
 
