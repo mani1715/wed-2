@@ -704,6 +704,7 @@ const PublicInvitation = () => {
                             href={event.map_link}
                             target="_blank"
                             rel="noopener noreferrer"
+                            onClick={() => trackInteraction('map_click')}
                             className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-md"
                             style={{
                               background: 'var(--color-secondary, #D4AF37)',
