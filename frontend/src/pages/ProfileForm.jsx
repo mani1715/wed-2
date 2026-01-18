@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import axios from 'axios';
-import { ArrowLeft, Save, Eye, ChevronDown, ChevronUp, Check, Upload, X, Star } from 'lucide-react';
+import { ArrowLeft, Save, Eye, ChevronDown, ChevronUp, Check, Upload, X, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { DESIGN_THEMES } from '@/config/designThemes';
 import { DEITY_OPTIONS } from '@/config/religiousAssets';
 import { LANGUAGES } from '@/utils/languageLoader';
