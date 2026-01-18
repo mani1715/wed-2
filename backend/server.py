@@ -26,6 +26,9 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
 import urllib.request
 from PIL import Image as PILImage
+import qrcode
+from icalendar import Calendar, Event as ICalEvent
+from io import BytesIO
 
 from models import (
     Admin, AdminLogin, AdminResponse,
