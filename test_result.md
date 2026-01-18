@@ -224,7 +224,7 @@ agent_communication:
       
       Ready for backend testing. Frontend will need user confirmation before testing.
 
-user_problem_statement: "Production-ready wedding & event invitation web platform with admin panel to create invitation profiles, generate unique shareable links, and allow guests to view invitations and submit greetings. UPDATED: Add design system with 8 selectable themes that control layout, colors, typography, and styling of invitation pages. PHASE 6: Add production-ready RSVP system with guest tracking, status filtering, CSV export, and duplicate prevention. Add optional background music feature with admin control, non-autoplay, guest toggle, and browser policy compliance."
+user_problem_statement: "Production-ready wedding & event invitation web platform with admin panel to create invitation profiles, generate unique shareable links, and allow guests to view invitations and submit greetings. UPDATED: Add design system with 8 selectable themes that control layout, colors, typography, and styling of invitation pages. PHASE 6: Add production-ready RSVP system with guest tracking, status filtering, CSV export, and duplicate prevention. Add optional background music feature with admin control, non-autoplay, guest toggle, and browser policy compliance. PHASE 11: Guest Interaction & Experience Polish - Add moderated wishes wall, contact information section, add to calendar (.ics), static event countdown, QR code generation, and RSVP UX improvements."
 
 backend:
   - task: "Authentication System"
