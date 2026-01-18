@@ -59,7 +59,11 @@ const ProfileForm = () => {
       events: true,
       rsvp: false,
       greetings: true,
-      footer: true
+      footer: true,
+      contact: false,
+      calendar: false,
+      countdown: false,
+      qr: false
     },
     background_music: {
       enabled: false,
@@ -67,6 +71,12 @@ const ProfileForm = () => {
     },
     map_settings: {
       embed_enabled: false
+    },
+    contact_info: {
+      groom_phone: '',
+      bride_phone: '',
+      emergency_phone: '',
+      email: ''
     },
     events: []
   });
