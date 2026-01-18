@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Heart, Calendar, MapPin, Send, Languages, MessageCircle } from 'lucide-react';
+import { Heart, Calendar, MapPin, Send, Languages, MessageCircle, Phone, Mail, Download, QrCode, Clock } from 'lucide-react';
 import { getTheme, applyThemeVariables } from '@/config/themes';
 import { getDeity, getDeityImage } from '@/config/religiousAssets';
 import { LANGUAGES, loadLanguage, getText, getSectionText, preloadLanguages } from '@/utils/languageLoader';
