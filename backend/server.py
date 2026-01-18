@@ -112,6 +112,76 @@ async def check_profile_active(profile: dict) -> bool:
     return True
 
 
+
+# HTML Sanitization
+ALLOWED_TAGS = ['p', 'br', 'strong', 'em', 'u', 'ul', 'ol', 'li', 'a', 'h3', 'h4']
+ALLOWED_ATTRIBUTES = {'a': ['href', 'title']}
+
+def sanitize_html(html: str) -> str:
+    """Sanitize HTML to prevent XSS attacks"""
+    if not html:
+        return html
+    return bleach.clean(
+        html,
+        tags=ALLOWED_TAGS,
+        attributes=ALLOWED_ATTRIBUTES,
+        strip=True
+    )
+
+
+# File Upload Validation
+ALLOWED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.webp', '.gif'}
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+
+def validate_image_file(file: UploadFile) -> tuple[bool, str]:
+    """Validate image file"""
+    # Check extension
+    ext = Path(file.filename).suffix.lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        return False, "Invalid file type. Allowed: JPG, PNG, WebP, GIF"
+    
+    # Check file size
+    file.file.seek(0, 2)
+    size = file.file.tell()
+    file.file.seek(0)
+    if size > MAX_FILE_SIZE:
+        return False, f"File too large. Maximum size: 5MB"
+    
+    return True, ""
+
+
+async def convert_to_webp(file: UploadFile, quality: int = 85) -> tuple[bytes, int]:
+    """Convert image to WebP format and return bytes with size"""
+    try:
+        # Read image
+        image_data = await file.read()
+        img = PILImage.open(io.BytesIO(image_data))
+        
+        # Convert RGBA to RGB if necessary
+        if img.mode in ('RGBA', 'LA', 'P'):
+            background = PILImage.new('RGB', img.size, (255, 255, 255))
+            if img.mode == 'P':
+                img = img.convert('RGBA')
+            background.paste(img, mask=img.split()[-1] if img.mode in ('RGBA', 'LA') else None)
+            img = background
+        
+        # Resize if too large (max 1920px width)
+        max_width = 1920
+        if img.width > max_width:
+            ratio = max_width / img.width
+            new_height = int(img.height * ratio)
+            img = img.resize((max_width, new_height), PILImage.Resampling.LANCZOS)
+        
+        # Convert to WebP
+        output = io.BytesIO()
+        img.save(output, format='WebP', quality=quality, optimize=True)
+        webp_data = output.getvalue()
+        
+        return webp_data, len(webp_data)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Invalid image file: {str(e)}")
+
+
 # ==================== AUTH ROUTES ====================
 
 @api_router.post("/auth/login")
