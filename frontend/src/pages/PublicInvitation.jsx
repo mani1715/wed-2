@@ -310,11 +310,15 @@ const PublicInvitation = () => {
     if (musicPlaying) {
       audioRef.pause();
       setMusicPlaying(false);
+      // PHASE 9: Track music pause
+      trackInteraction('music_pause');
     } else {
       audioRef.play().catch(err => {
         console.error('Failed to play audio:', err);
       });
       setMusicPlaying(true);
+      // PHASE 9: Track music play
+      trackInteraction('music_play');
     }
   };
 
