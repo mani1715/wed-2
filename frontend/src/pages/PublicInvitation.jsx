@@ -1654,6 +1654,7 @@ const PublicInvitation = () => {
                 </Button>
               </div>
             </form>
+            </>
           ) : (
             <div className="text-center py-8">
               <div className="text-6xl mb-4">
