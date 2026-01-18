@@ -1426,15 +1426,24 @@ const PublicInvitation = () => {
             </form>
           ) : (
             <div className="text-center py-8">
-              <div className="text-6xl mb-4">✓</div>
+              <div className="text-6xl mb-4">
+                {submittedRsvpStatus === 'yes' && '✓'}
+                {submittedRsvpStatus === 'no' && '✗'}
+                {submittedRsvpStatus === 'maybe' && '?'}
+              </div>
               <h4 
                 className="text-xl font-semibold mb-2"
                 style={{ color: 'var(--color-primary, #8B7355)' }}
               >
                 Thank You!
               </h4>
-              <p style={{ color: 'var(--color-text, #4A3728)' }}>
+              <p style={{ color: 'var(--color-text, #4A3728)' }} className="mb-2">
                 Your RSVP has been submitted successfully.
+              </p>
+              <p style={{ color: 'var(--color-primary, #8B7355)' }} className="font-semibold">
+                {submittedRsvpStatus === 'yes' && '✓ Attending'}
+                {submittedRsvpStatus === 'no' && 'Not Attending'}
+                {submittedRsvpStatus === 'maybe' && 'Maybe'}
               </p>
             </div>
           )}
