@@ -96,6 +96,8 @@ const ProfileForm = () => {
         event_type: profile.event_type,
         event_date: new Date(profile.event_date).toISOString().split('T')[0],
         venue: profile.venue,
+        city: profile.city || '',
+        invitation_message: profile.invitation_message || '',
         language: Array.isArray(profile.language) ? profile.language : [profile.language],
         design_id: profile.design_id || 'royal_classic',
         deity_id: profile.deity_id || null,
@@ -103,16 +105,36 @@ const ProfileForm = () => {
         whatsapp_bride: profile.whatsapp_bride || '',
         enabled_languages: profile.enabled_languages || ['english'],
         custom_text: profile.custom_text || {},
+        about_couple: profile.about_couple || '',
+        family_details: profile.family_details || '',
+        love_story: profile.love_story || '',
+        cover_photo_id: profile.cover_photo_id || null,
         link_expiry_type: profile.link_expiry_type,
         link_expiry_value: profile.link_expiry_value || '30',
         sections_enabled: profile.sections_enabled,
         background_music: profile.background_music || { enabled: false, file_url: null },
+        map_settings: profile.map_settings || { embed_enabled: false },
         events: profile.events || [],
         slug: profile.slug
       });
+
+      // Fetch photos for this profile
+      await fetchPhotos(profileId);
     } catch (error) {
       console.error('Failed to fetch profile:', error);
       setError('Failed to load profile');
+    }
+  };
+
+  const fetchPhotos = async (profId) => {
+    try {
+      const token = localStorage.getItem('admin_token');
+      const response = await axios.get(`${API_URL}/api/admin/profiles/${profId}/media`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPhotos(response.data.filter(m => m.media_type === 'photo'));
+    } catch (error) {
+      console.error('Failed to fetch photos:', error);
     }
   };
 
