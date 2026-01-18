@@ -1326,8 +1326,11 @@ const PublicInvitation = () => {
           >
             RSVP
           </h3>
-          <p className="text-center mb-6" style={{ color: 'var(--color-text, #4A3728)' }}>
+          <p className="text-center mb-2" style={{ color: 'var(--color-text, #4A3728)' }}>
             Please let us know if you can join us for this special occasion
+          </p>
+          <p className="text-center mb-6 text-xs" style={{ color: 'var(--color-accent, #C9A961)' }}>
+            You can edit your RSVP within 48 hours of submission
           </p>
 
           {!rsvpSuccess ? (
