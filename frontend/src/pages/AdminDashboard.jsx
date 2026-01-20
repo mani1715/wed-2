@@ -286,10 +286,26 @@ const AdminDashboard = () => {
                 <div className="space-y-4">
                   {/* Header */}
                   <div>
-                    <div className="flex items-start justify-between mb-2">
-                      <span className="inline-block px-2 py-1 text-xs font-semibold text-rose-600 bg-rose-100 rounded">
-                        {getEventTypeLabel(profile.event_type)}
-                      </span>
+                    <div className="flex items-start justify-between mb-2 flex-wrap gap-2">
+                      <div className="flex gap-2 flex-wrap">
+                        <span className="inline-block px-2 py-1 text-xs font-semibold text-rose-600 bg-rose-100 rounded">
+                          {getEventTypeLabel(profile.event_type)}
+                        </span>
+                        {/* PHASE 12: Template Badge */}
+                        {profile.is_template && (
+                          <span className="inline-flex items-center px-2 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded">
+                            <FileText className="w-3 h-3 mr-1" />
+                            Template
+                          </span>
+                        )}
+                        {/* PHASE 12: Expired Badge */}
+                        {isProfileExpired(profile) && (
+                          <span className="inline-flex items-center px-2 py-1 text-xs font-semibold text-red-600 bg-red-100 rounded">
+                            <AlertCircle className="w-3 h-3 mr-1" />
+                            Expired
+                          </span>
+                        )}
+                      </div>
                       {!profile.is_active && (
                         <span className="text-xs text-gray-500">Inactive</span>
                       )}
