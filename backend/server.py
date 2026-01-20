@@ -251,7 +251,7 @@ async def get_all_profiles(admin_id: str = Depends(get_current_admin)):
 
 
 @api_router.post("/admin/profiles", response_model=ProfileResponse)
-async def create_profile(profile_data: ProfileCreate, admin_id: str = Depends(get_current_admin)):
+async def create_profile(profile_data: ProfileCreate, admin: dict = Depends(get_current_admin)):
     """Create new profile"""
     # Generate unique slug
     slug = generate_slug(profile_data.groom_name, profile_data.bride_name)
@@ -265,6 +265,9 @@ async def create_profile(profile_data: ProfileCreate, admin_id: str = Depends(ge
         profile_data.link_expiry_type,
         profile_data.link_expiry_value
     )
+    
+    # PHASE 12: Calculate default expires_at (wedding date + 7 days)
+    default_expires_at = profile_data.expires_at if profile_data.expires_at else profile_data.event_date + timedelta(days=7)
     
     # Sanitize HTML fields
     about_couple = sanitize_html(profile_data.about_couple) if profile_data.about_couple else None
@@ -299,7 +302,12 @@ async def create_profile(profile_data: ProfileCreate, admin_id: str = Depends(ge
         events=profile_data.events,
         link_expiry_type=profile_data.link_expiry_type,
         link_expiry_value=profile_data.link_expiry_value,
-        link_expiry_date=expiry_date
+        link_expiry_date=expiry_date,
+        # PHASE 12: New fields
+        is_template=profile_data.is_template,
+        template_name=profile_data.template_name,
+        cloned_from=None,  # Set by duplication endpoint only
+        expires_at=default_expires_at
     )
     
     # Convert to dict and serialize dates
@@ -309,8 +317,18 @@ async def create_profile(profile_data: ProfileCreate, admin_id: str = Depends(ge
     doc['updated_at'] = doc['updated_at'].isoformat()
     if doc['link_expiry_date']:
         doc['link_expiry_date'] = doc['link_expiry_date'].isoformat()
+    if doc.get('expires_at'):
+        doc['expires_at'] = doc['expires_at'].isoformat()
     
     await db.profiles.insert_one(doc)
+    
+    # PHASE 12: Create audit log
+    await create_audit_log(
+        admin_id=admin['id'],
+        action="profile_created",
+        target_id=profile.id,
+        details={"slug": slug, "groom": profile_data.groom_name, "bride": profile_data.bride_name}
+    )
     
     # Prepare response
     response_data = profile.model_dump()
