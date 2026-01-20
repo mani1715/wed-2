@@ -21,7 +21,7 @@ import time
 import re
 
 # Configuration
-BASE_URL = "https://marriage-site-2.preview.emergentagent.com/api"
+BASE_URL = "https://wed-management.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@wedding.com"
 ADMIN_PASSWORD = "admin123"
 
