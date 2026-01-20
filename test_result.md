@@ -859,18 +859,17 @@ frontend:
 
 test_plan:
   current_focus:
-    - "PHASE 11 - Greetings Moderation Backend"
-    - "PHASE 11 - Contact Info & Sections Backend"
-    - "PHASE 11 - QR Code & Calendar Backend"
-    - "PHASE 11 - GreetingsManagement Admin Page"
-    - "PHASE 11 - Contact Information Display"
-    - "PHASE 11 - Calendar & QR Code Features"
-    - "PHASE 11 - Event Countdown Display"
-    - "PHASE 11 - Section Toggles & Admin Navigation"
+    - "PHASE 12 - Expiry & Auto-Disable System"
+    - "PHASE 12 - Profile Duplication"
+    - "PHASE 12 - Template System"
+    - "PHASE 12 - Rate Limiting"
+    - "PHASE 12 - Error Handling & Fallbacks"
+    - "PHASE 12 - Audit Logging"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
   phase_11_implementation_verified: true
+  phase_12_in_progress: true
 
 agent_communication:
     - agent: "main"
