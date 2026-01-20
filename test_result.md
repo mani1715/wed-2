@@ -895,6 +895,158 @@ agent_communication:
            - Frontend: ProfileForm has contact info fields
            - Frontend: PublicInvitation displays "Contact Us" with click-to-call and tap-to-email
            - Toggle: sections_enabled.contact (default: false)
+
+
+# ============================================================================
+# PHASE 12 - SCALABILITY, TEMPLATES & PRODUCTION HARDENING
+# ============================================================================
+
+user_problem_statement: |
+  PHASE 12: Add production-ready features for scalability and reusability:
+  1. Invitation Templates - Save/reuse profile configurations
+  2. Profile Duplication - Clone profiles with data reset
+  3. Expiry & Auto-Disable - Automatic invitation expiry system
+  4. Rate Limiting - Prevent spam (5 RSVP/IP/day, 3 wishes/IP/day)
+  5. Error Handling & Fallbacks - Graceful degradation
+  6. Audit Logging - Track admin actions
+
+# PROGRESS TRACKER (Updated after each feature completion)
+phase_12_progress:
+  - feature: "1. Expiry & Auto-Disable System"
+    status: "🔄 TESTING"
+    backend: "Implemented"
+    frontend: "Implemented"
+    tested: false
+    
+  - feature: "2. Profile Duplication"
+    status: "⏳ PENDING"
+    backend: "Implemented"
+    frontend: "Implemented"
+    tested: false
+    
+  - feature: "3. Template System"
+    status: "⏳ PENDING"
+    backend: "Implemented"
+    frontend: "Implemented"
+    tested: false
+    
+  - feature: "4. Rate Limiting"
+    status: "⏳ PENDING"
+    backend: "Implemented"
+    frontend: "N/A"
+    tested: false
+    
+  - feature: "5. Error Handling & Fallbacks"
+    status: "⏳ PENDING"
+    backend: "Partial"
+    frontend: "Partial"
+    tested: false
+    
+  - feature: "6. Audit Logging"
+    status: "⏳ PENDING"
+    backend: "Implemented"
+    frontend: "N/A"
+    tested: false
+
+backend:
+  - task: "PHASE 12 - Expiry System Backend"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/models.py, /app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Profile model has expires_at field. API endpoint PUT /api/admin/profiles/{id}/set-expiry implemented. Public invitation API checks expiry and returns is_expired flag."
+
+  - task: "PHASE 12 - Profile Duplication Backend"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "POST /api/admin/profiles/{id}/duplicate endpoint implemented. Copies design/structure, resets RSVP/wishes/analytics, generates new slug, sets cloned_from field."
+
+  - task: "PHASE 12 - Template System Backend"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/models.py, /app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "InvitationTemplate model created. API endpoints: POST /api/admin/profiles/{id}/save-as-template, GET /api/admin/templates, POST /api/admin/profiles/create-from-template/{template_id}. Templates exclude names, dates, photos, RSVP data."
+
+  - task: "PHASE 12 - Rate Limiting Backend"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "RateLimitTracker model created. check_rate_limit() function implemented. Applied to RSVP endpoint (5/IP/day) and wishes endpoint (3/IP/day). Returns 429 status when exceeded."
+
+  - task: "PHASE 12 - Audit Logging Backend"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "AuditLog model created. create_audit_log() function implemented. Logs: profile_created, profile_updated, template_saved, profile_duplicated, expiry_set. GET /api/admin/audit-logs endpoint returns last 1000 entries."
+
+frontend:
+  - task: "PHASE 12 - Expiry Banner & Disabled Actions"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/PublicInvitation.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Red expiry banner added (fixed top, z-index 100). RSVP and wishes forms disabled when is_expired=true. Error messages shown for expired invitations."
+
+  - task: "PHASE 12 - Admin Dashboard Actions"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/AdminDashboard.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added buttons: Save as Template, Duplicate Profile, Set Expiry Date. Added badges: Template badge (blue), Expired badge (red). Handlers: handleSaveAsTemplate(), handleDuplicate(), handleSetExpiry()."
+
+  - task: "PHASE 12 - Template Selection UI"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/ProfileForm.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Use Template button added (shown only for new profiles). Template selection modal with grid display. Shows template name, description, design, languages, events count, usage count. applyTemplate() function prefills form with template data."
+
+
         
         3. **ADD TO CALENDAR (.ics)** ✅
            - Backend: GET /api/invite/{slug}/calendar generates .ics file
