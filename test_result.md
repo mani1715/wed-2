@@ -746,6 +746,54 @@ frontend:
         agent: "main"
         comment: "✅ PHASE 11 ADMIN UI CREATED: Created GreetingsManagement.jsx page for greeting moderation. Features: Stats cards (Total/Pending/Approved/Rejected), Filter buttons (All/Pending/Approved/Rejected), Greeting cards with guest name, message, timestamp, status badge. Action buttons: Approve (green), Reject (red), Delete (gray). Sanitized text display. Route added to App.js: /admin/profile/:profileId/greetings."
 
+  - task: "PHASE 11 - Contact Information Display"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/PublicInvitation.jsx, /app/frontend/src/pages/ProfileForm.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "✅ PHASE 11 CONTACT UI COMPLETE: ProfileForm has contact info fields (groom_phone, bride_phone, emergency_phone, email). PublicInvitation displays Contact Us section with click-to-call and tap-to-email links. Phone, Mail icons used. Grid layout 1/2 columns responsive. Toggle: sections_enabled.contact."
+
+  - task: "PHASE 11 - Calendar & QR Code Features"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/PublicInvitation.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "✅ PHASE 11 CALENDAR & QR UI COMPLETE: Add to Calendar button downloads .ics file from backend. QR Code section displays QR image for invitation sharing. Both features in flex layout (1 or 2 cards responsive). Calendar toggle: sections_enabled.calendar, QR toggle: sections_enabled.qr. Icons: Calendar, Download, QrCode."
+
+  - task: "PHASE 11 - Event Countdown Display"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/PublicInvitation.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "✅ PHASE 11 COUNTDOWN UI COMPLETE: Static countdown displays 'X Days to Go' for main wedding event. Updates on page load only (no live ticking). Hidden after event date. Clock icon. Large font display. Toggle: sections_enabled.countdown. Finds main wedding event or first visible event."
+
+  - task: "PHASE 11 - Section Toggles & Admin Navigation"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/ProfileForm.jsx, /app/frontend/src/pages/AdminDashboard.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "✅ PHASE 11 TOGGLES & NAVIGATION COMPLETE: ProfileForm has section toggles for all PHASE 11 features (contact, calendar, countdown, qr, greetings, rsvp). All toggles displayed in grid layout. AdminDashboard has Greetings button (MessageCircle icon) navigating to /admin/profile/:profileId/greetings. All routes configured in App.js."
+
 
 backend:
   - task: "PHASE 10 - CMS Backend Models & Fields"
