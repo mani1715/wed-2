@@ -84,6 +84,56 @@ const ProfileForm = () => {
   const [savedProfile, setSavedProfile] = useState(null);
   const [photos, setPhotos] = useState([]);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  
+  // PHASE 12: Template selection states
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [templates, setTemplates] = useState([]);
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
+
+  // PHASE 12: Fetch templates
+  useEffect(() => {
+    if (!isEdit && admin) {
+      fetchTemplates();
+    }
+  }, [isEdit, admin]);
+
+  const fetchTemplates = async () => {
+    try {
+      setLoadingTemplates(true);
+      const response = await axios.get(`${API_URL}/api/admin/templates`);
+      setTemplates(response.data);
+    } catch (error) {
+      console.error('Failed to fetch templates:', error);
+    } finally {
+      setLoadingTemplates(false);
+    }
+  };
+
+  // PHASE 12: Apply template to form
+  const applyTemplate = async (templateId) => {
+    try {
+      const response = await axios.post(`${API_URL}/api/admin/profiles/create-from-template/${templateId}`);
+      const templateData = response.data;
+      
+      // Apply template data to form
+      setFormData(prev => ({
+        ...prev,
+        design_id: templateData.design_id,
+        deity_id: templateData.deity_id,
+        enabled_languages: templateData.enabled_languages,
+        sections_enabled: templateData.sections_enabled,
+        background_music: templateData.background_music,
+        map_settings: templateData.map_settings,
+        events: templateData.events_structure || []
+      }));
+      
+      setShowTemplateModal(false);
+      alert('Template applied successfully! Fill in the remaining details.');
+    } catch (error) {
+      console.error('Failed to apply template:', error);
+      alert('Failed to apply template. Please try again.');
+    }
+  };
 
   useEffect(() => {
     if (!admin) {
