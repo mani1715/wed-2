@@ -847,8 +847,13 @@ async def delete_greeting(greeting_id: str, admin_id: str = Depends(get_current_
 # ==================== RSVP ROUTES ====================
 
 @api_router.post("/rsvp", response_model=RSVPResponse)
-async def submit_rsvp(slug: str, rsvp_data: RSVPCreate):
+async def submit_rsvp(slug: str, rsvp_data: RSVPCreate, request: Request):
     """Submit RSVP for invitation (public endpoint)"""
+    # PHASE 12: Check rate limit (5 RSVPs per IP per day)
+    client_ip = request.client.host
+    if not await check_rate_limit(client_ip, "rsvp", 5):
+        raise HTTPException(status_code=429, detail="Too many RSVP submissions. Please try again tomorrow.")
+    
     # Find profile by slug
     profile = await db.profiles.find_one({"slug": slug}, {"_id": 0})
     
