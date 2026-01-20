@@ -124,6 +124,11 @@ class Profile(BaseModel):
     link_expiry_value: Optional[int] = None  # number of hours/days
     link_expiry_date: Optional[datetime] = None  # calculated expiry date
     is_active: bool = True
+    # PHASE 12: Template & Duplication Support
+    is_template: bool = False  # Mark if this is a saved template
+    template_name: Optional[str] = None  # Name of the template (for admin reference)
+    cloned_from: Optional[str] = None  # Profile ID if this was duplicated
+    expires_at: Optional[datetime] = None  # Auto-expiry date (default: wedding_date + 7 days)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     
