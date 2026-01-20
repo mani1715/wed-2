@@ -157,6 +157,72 @@ const AdminDashboard = () => {
     }
   };
 
+  // PHASE 12: Save profile as template
+  const handleSaveAsTemplate = async (profileId) => {
+    const templateName = prompt('Enter a name for this template:');
+    if (!templateName || !templateName.trim()) return;
+    
+    const description = prompt('Enter a description (optional):') || '';
+    
+    try {
+      await axios.post(`${API_URL}/api/admin/profiles/${profileId}/save-as-template`, {
+        template_name: templateName.trim(),
+        description: description.trim()
+      });
+      alert('Template saved successfully!');
+      fetchProfiles();
+    } catch (error) {
+      console.error('Failed to save template:', error);
+      alert('Failed to save template. Please try again.');
+    }
+  };
+
+  // PHASE 12: Duplicate profile
+  const handleDuplicate = async (profileId) => {
+    if (!window.confirm('Duplicate this profile? RSVPs, wishes, and analytics will be reset.')) {
+      return;
+    }
+    
+    try {
+      const response = await axios.post(`${API_URL}/api/admin/profiles/${profileId}/duplicate`);
+      alert('Profile duplicated successfully!');
+      fetchProfiles();
+    } catch (error) {
+      console.error('Failed to duplicate profile:', error);
+      alert('Failed to duplicate profile. Please try again.');
+    }
+  };
+
+  // PHASE 12: Set expiry date
+  const handleSetExpiry = async (profileId) => {
+    const dateStr = prompt('Enter expiry date (YYYY-MM-DD):');
+    if (!dateStr) return;
+    
+    try {
+      const expiryDate = new Date(dateStr);
+      if (isNaN(expiryDate.getTime())) {
+        alert('Invalid date format. Please use YYYY-MM-DD');
+        return;
+      }
+      
+      await axios.put(`${API_URL}/api/admin/profiles/${profileId}/set-expiry`, {
+        expires_at: expiryDate.toISOString()
+      });
+      alert('Expiry date set successfully!');
+      fetchProfiles();
+    } catch (error) {
+      console.error('Failed to set expiry:', error);
+      alert('Failed to set expiry date. Please try again.');
+    }
+  };
+
+  // PHASE 12: Check if profile is expired
+  const isProfileExpired = (profile) => {
+    if (!profile.expires_at) return false;
+    const expiryDate = new Date(profile.expires_at);
+    return expiryDate < new Date();
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
