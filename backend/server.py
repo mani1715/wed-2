@@ -1989,6 +1989,310 @@ async def download_calendar(slug: str):
     )
 
 
+# ==========================================
+# PHASE 12 - SCALABILITY & PRODUCTION ENDPOINTS
+# ==========================================
+
+# Helper function for audit logging
+async def create_audit_log(admin_id: str, action: str, target_id: Optional[str] = None, details: Optional[dict] = None):
+    """Create audit log entry"""
+    audit_log = {
+        "id": str(uuid.uuid4()),
+        "admin_id": admin_id,
+        "action": action,
+        "target_id": target_id,
+        "details": details,
+        "timestamp": datetime.now(timezone.utc)
+    }
+    await db.audit_logs.insert_one(audit_log)
+
+
+# Helper function for rate limiting
+async def check_rate_limit(ip_address: str, action_type: str, max_count: int) -> bool:
+    """Check if IP has exceeded rate limit for the day"""
+    today = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+    
+    tracker = await db.rate_limits.find_one({
+        "ip_address": ip_address,
+        "action_type": action_type,
+        "date": today
+    })
+    
+    if tracker and tracker['count'] >= max_count:
+        return False  # Rate limit exceeded
+    
+    # Update or create tracker
+    if tracker:
+        await db.rate_limits.update_one(
+            {"_id": tracker['_id']},
+            {
+                "$inc": {"count": 1},
+                "$set": {"last_action_at": datetime.now(timezone.utc)}
+            }
+        )
+    else:
+        await db.rate_limits.insert_one({
+            "id": str(uuid.uuid4()),
+            "ip_address": ip_address,
+            "action_type": action_type,
+            "count": 1,
+            "date": today,
+            "last_action_at": datetime.now(timezone.utc)
+        })
+    
+    return True  # Within rate limit
+
+
+@api_router.post("/admin/profiles/{profile_id}/save-as-template", response_model=InvitationTemplateResponse)
+async def save_profile_as_template(
+    profile_id: str,
+    template_data: InvitationTemplateCreate,
+    admin: dict = Depends(get_current_admin)
+):
+    """
+    Save an existing profile as a reusable template.
+    Strips all personal data (names, dates, photos, RSVPs, wishes, analytics).
+    """
+    # Get the profile
+    profile = await db.profiles.find_one({"id": profile_id})
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profile not found")
+    
+    # Extract only configuration (NO personal data)
+    events_structure = []
+    if profile.get('events'):
+        for event in profile['events']:
+            events_structure.append({
+                "name": event['name'],  # Keep event type (Mehendi, Sangeet, etc.)
+                "venue_name": "",  # Empty - admin fills
+                "venue_address": "",  # Empty - admin fills
+                "map_link": "",  # Empty - admin fills
+                "description": event.get('description', ''),
+                "visible": event['visible'],
+                "order": event['order']
+            })
+    
+    # Create template
+    template = {
+        "id": str(uuid.uuid4()),
+        "template_name": template_data.template_name,
+        "description": template_data.description,
+        "design_id": profile['design_id'],
+        "deity_id": profile.get('deity_id'),
+        "enabled_languages": profile['enabled_languages'],
+        "sections_enabled": profile['sections_enabled'],
+        "background_music": {
+            "enabled": profile.get('background_music', {}).get('enabled', False),
+            "file_url": None  # Don't save personal music file
+        },
+        "map_settings": profile.get('map_settings', {"embed_enabled": False}),
+        "contact_info": {
+            "groom_phone": None,  # Empty - admin fills
+            "bride_phone": None,
+            "emergency_phone": None,
+            "email": None
+        },
+        "events_structure": events_structure,
+        "created_by": admin['id'],
+        "created_at": datetime.now(timezone.utc),
+        "usage_count": 0
+    }
+    
+    await db.templates.insert_one(template)
+    
+    # Create audit log
+    await create_audit_log(
+        admin_id=admin['id'],
+        action="template_saved",
+        target_id=template['id'],
+        details={"profile_id": profile_id, "template_name": template_data.template_name}
+    )
+    
+    return InvitationTemplateResponse(**template)
+
+
+@api_router.get("/admin/templates", response_model=List[InvitationTemplateResponse])
+async def list_templates(admin: dict = Depends(get_current_admin)):
+    """List all saved templates"""
+    templates = await db.templates.find().sort("created_at", -1).to_list(100)
+    return [InvitationTemplateResponse(**t) for t in templates]
+
+
+@api_router.post("/admin/profiles/create-from-template/{template_id}")
+async def get_template_for_profile_creation(
+    template_id: str,
+    admin: dict = Depends(get_current_admin)
+):
+    """
+    Get template data for creating a new profile.
+    Returns template configuration that can be used to prefill the profile form.
+    """
+    template = await db.templates.find_one({"id": template_id})
+    if not template:
+        raise HTTPException(status_code=404, detail="Template not found")
+    
+    # Increment usage count
+    await db.templates.update_one(
+        {"id": template_id},
+        {"$inc": {"usage_count": 1}}
+    )
+    
+    # Return template data for frontend to use
+    return {
+        "design_id": template['design_id'],
+        "deity_id": template.get('deity_id'),
+        "enabled_languages": template['enabled_languages'],
+        "sections_enabled": template['sections_enabled'],
+        "background_music": template['background_music'],
+        "map_settings": template['map_settings'],
+        "events_structure": template['events_structure']
+    }
+
+
+@api_router.delete("/admin/templates/{template_id}")
+async def delete_template(
+    template_id: str,
+    admin: dict = Depends(get_current_admin)
+):
+    """Delete a template"""
+    template = await db.templates.find_one({"id": template_id})
+    if not template:
+        raise HTTPException(status_code=404, detail="Template not found")
+    
+    await db.templates.delete_one({"id": template_id})
+    
+    # Create audit log
+    await create_audit_log(
+        admin_id=admin['id'],
+        action="template_deleted",
+        target_id=template_id,
+        details={"template_name": template.get('template_name')}
+    )
+    
+    return {"message": "Template deleted successfully"}
+
+
+@api_router.post("/admin/profiles/{profile_id}/duplicate", response_model=ProfileResponse)
+async def duplicate_profile(
+    profile_id: str,
+    admin: dict = Depends(get_current_admin)
+):
+    """
+    Duplicate an existing profile.
+    Copies: design, sections, languages, event structure.
+    Resets: RSVP, wishes, analytics, generates new slug.
+    """
+    # Get the original profile
+    original = await db.profiles.find_one({"id": profile_id})
+    if not original:
+        raise HTTPException(status_code=404, detail="Profile not found")
+    
+    # Generate new slug
+    new_slug = generate_slug(original['groom_name'], original['bride_name'])
+    
+    # Calculate default expiry (wedding date + 7 days)
+    default_expiry = original['event_date'] + timedelta(days=7)
+    
+    # Create duplicated profile
+    new_profile = {
+        "id": str(uuid.uuid4()),
+        "slug": new_slug,
+        "groom_name": original['groom_name'],
+        "bride_name": original['bride_name'],
+        "event_type": original['event_type'],
+        "event_date": original['event_date'],
+        "venue": original['venue'],
+        "city": original.get('city'),
+        "invitation_message": original.get('invitation_message'),
+        "language": original['language'],
+        "design_id": original['design_id'],
+        "deity_id": original.get('deity_id'),
+        "whatsapp_groom": original.get('whatsapp_groom'),
+        "whatsapp_bride": original.get('whatsapp_bride'),
+        "enabled_languages": original['enabled_languages'],
+        "custom_text": original.get('custom_text', {}),
+        "about_couple": original.get('about_couple'),
+        "family_details": original.get('family_details'),
+        "love_story": original.get('love_story'),
+        "cover_photo_id": None,  # Reset cover photo
+        "sections_enabled": original['sections_enabled'],
+        "background_music": original.get('background_music', {"enabled": False, "file_url": None}),
+        "map_settings": original.get('map_settings', {"embed_enabled": False}),
+        "contact_info": original.get('contact_info', {}),
+        "events": original.get('events', []),
+        "link_expiry_type": original.get('link_expiry_type', 'days'),
+        "link_expiry_value": original.get('link_expiry_value', 30),
+        "link_expiry_date": calculate_expiry_date(
+            original.get('link_expiry_type', 'days'),
+            original.get('link_expiry_value', 30)
+        ),
+        "is_active": True,
+        "is_template": False,
+        "template_name": None,
+        "cloned_from": profile_id,  # Track original profile
+        "expires_at": default_expiry,  # Auto-set expiry
+        "created_at": datetime.now(timezone.utc),
+        "updated_at": datetime.now(timezone.utc)
+    }
+    
+    await db.profiles.insert_one(new_profile)
+    
+    # Create audit log
+    await create_audit_log(
+        admin_id=admin['id'],
+        action="profile_duplicated",
+        target_id=new_profile['id'],
+        details={"original_profile_id": profile_id, "new_slug": new_slug}
+    )
+    
+    # Return response
+    new_profile['invitation_link'] = f"/invite/{new_slug}"
+    return ProfileResponse(**new_profile)
+
+
+@api_router.put("/admin/profiles/{profile_id}/set-expiry")
+async def set_profile_expiry(
+    profile_id: str,
+    expiry_data: SetExpiryRequest,
+    admin: dict = Depends(get_current_admin)
+):
+    """Set custom expiry date for a profile"""
+    profile = await db.profiles.find_one({"id": profile_id})
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profile not found")
+    
+    # Update expiry date
+    await db.profiles.update_one(
+        {"id": profile_id},
+        {
+            "$set": {
+                "expires_at": expiry_data.expires_at,
+                "updated_at": datetime.now(timezone.utc)
+            }
+        }
+    )
+    
+    # Create audit log
+    await create_audit_log(
+        admin_id=admin['id'],
+        action="expiry_set",
+        target_id=profile_id,
+        details={"expires_at": expiry_data.expires_at.isoformat()}
+    )
+    
+    return {"message": "Expiry date set successfully", "expires_at": expiry_data.expires_at}
+
+
+@api_router.get("/admin/audit-logs", response_model=List[AuditLogResponse])
+async def get_audit_logs(
+    limit: int = 1000,
+    admin: dict = Depends(get_current_admin)
+):
+    """Get audit logs (last 1000 entries)"""
+    logs = await db.audit_logs.find().sort("timestamp", -1).limit(limit).to_list(limit)
+    return [AuditLogResponse(**log) for log in logs]
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
