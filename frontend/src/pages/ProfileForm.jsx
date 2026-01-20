@@ -701,9 +701,75 @@ const ProfileForm = () => {
 
       {/* Form */}
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">
-          {isEdit ? 'Edit Profile' : 'Create New Profile'}
-        </h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800">
+            {isEdit ? 'Edit Profile' : 'Create New Profile'}
+          </h1>
+          
+          {/* PHASE 12: Create from Template Button */}
+          {!isEdit && (
+            <Button
+              type="button"
+              onClick={() => setShowTemplateModal(true)}
+              className="bg-cyan-600 hover:bg-cyan-700"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2 rotate-180" />
+              Use Template
+            </Button>
+          )}
+        </div>
+
+        {/* PHASE 12: Template Selection Modal */}
+        {showTemplateModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <Card className="max-w-3xl w-full max-h-[80vh] overflow-y-auto p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold">Select a Template</h2>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowTemplateModal(false)}
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
+
+              {loadingTemplates ? (
+                <p className="text-center text-gray-600 py-8">Loading templates...</p>
+              ) : templates.length === 0 ? (
+                <p className="text-center text-gray-600 py-8">No templates available yet.</p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {templates.map((template) => (
+                    <Card
+                      key={template.id}
+                      className="p-4 hover:shadow-lg cursor-pointer transition-shadow"
+                      onClick={() => applyTemplate(template.id)}
+                    >
+                      <h3 className="font-bold text-lg mb-2">{template.template_name}</h3>
+                      {template.description && (
+                        <p className="text-sm text-gray-600 mb-3">{template.description}</p>
+                      )}
+                      <div className="space-y-1 text-xs text-gray-500">
+                        <p>Design: {template.design_id}</p>
+                        <p>Languages: {template.enabled_languages.length}</p>
+                        <p>Events: {template.events_structure?.length || 0}</p>
+                        <p className="text-gray-400">Used: {template.usage_count} times</p>
+                      </div>
+                      <Button
+                        type="button"
+                        size="sm"
+                        className="w-full mt-3"
+                      >
+                        Apply Template
+                      </Button>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </Card>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Information */}
