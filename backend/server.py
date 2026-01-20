@@ -408,7 +408,7 @@ async def update_profile(
     
     # PHASE 12: Create audit log
     await create_audit_log(
-        admin_id=admin['id'],
+        admin_id=admin_id,
         action="profile_updated",
         target_id=profile_id,
         details={"fields_updated": list(update_dict.keys())}
