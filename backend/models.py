@@ -404,6 +404,11 @@ class ProfileResponse(BaseModel):
     link_expiry_value: Optional[int]
     link_expiry_date: Optional[datetime]
     is_active: bool
+    # PHASE 12: Template & Duplication Support
+    is_template: bool
+    template_name: Optional[str]
+    cloned_from: Optional[str]
+    expires_at: Optional[datetime]
     created_at: datetime
     updated_at: datetime
     invitation_link: str
