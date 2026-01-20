@@ -364,7 +364,7 @@ async def get_profile(profile_id: str, admin_id: str = Depends(get_current_admin
 async def update_profile(
     profile_id: str,
     update_data: ProfileUpdate,
-    admin: dict = Depends(get_current_admin)
+    admin_id: str = Depends(get_current_admin)
 ):
     """Update profile"""
     existing_profile = await db.profiles.find_one({"id": profile_id}, {"_id": 0})
