@@ -472,6 +472,45 @@ const AdminDashboard = () => {
                         Greetings
                       </Button>
                     </div>
+                    
+                    {/* PHASE 12: Template & Duplication Actions */}
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleSaveAsTemplate(profile.id)}
+                        className="flex-1 text-cyan-600 hover:bg-cyan-50"
+                        title="Save as Template"
+                      >
+                        <FileText className="w-4 h-4 mr-1" />
+                        Save Template
+                      </Button>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDuplicate(profile.id)}
+                        className="flex-1 text-orange-600 hover:bg-orange-50"
+                        title="Duplicate Profile"
+                      >
+                        <CopyPlus className="w-4 h-4 mr-1" />
+                        Duplicate
+                      </Button>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleSetExpiry(profile.id)}
+                        className="flex-1 text-amber-600 hover:bg-amber-50"
+                        title="Set Expiry Date"
+                      >
+                        <CalendarClock className="w-4 h-4 mr-1" />
+                        Set Expiry
+                      </Button>
+                    </div>
+                    
                     <div className="flex gap-2">
                       <Button
                         variant="outline"
