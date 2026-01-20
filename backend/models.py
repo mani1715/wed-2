@@ -310,6 +310,10 @@ class ProfileUpdate(BaseModel):
     link_expiry_type: Optional[str] = None
     link_expiry_value: Optional[int] = None
     is_active: Optional[bool] = None
+    # PHASE 12: Template & Duplication Support
+    is_template: Optional[bool] = None
+    template_name: Optional[str] = None
+    expires_at: Optional[datetime] = None
     
     @field_validator('events')
     def validate_events(cls, v):
