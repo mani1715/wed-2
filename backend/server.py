@@ -658,7 +658,16 @@ async def get_invitation(slug: str):
     if not profile:
         raise HTTPException(status_code=404, detail="Invitation not found")
     
-    # Check if active and not expired
+    # PHASE 12: Check expiry status (don't block access, just set flag)
+    is_expired = False
+    if profile.get('expires_at'):
+        expires_at = profile['expires_at']
+        if isinstance(expires_at, str):
+            expires_at = datetime.fromisoformat(expires_at)
+        if datetime.now(timezone.utc) > expires_at:
+            is_expired = True
+    
+    # Check if active and not expired (link_expiry_date logic - existing)
     if not await check_profile_active(profile):
         raise HTTPException(status_code=410, detail="This invitation link has expired")
     
@@ -712,7 +721,8 @@ async def get_invitation(slug: str):
         contact_info=ContactInfo(**profile.get('contact_info', {})),  # PHASE 11: Contact information
         events=[WeddingEvent(**e) for e in profile.get('events', [])],
         media=[ProfileMedia(**m) for m in media_list],
-        greetings=[GreetingResponse(**g) for g in greetings_list]
+        greetings=[GreetingResponse(**g) for g in greetings_list],
+        is_expired=is_expired  # PHASE 12: Expiry flag
     )
 
 
