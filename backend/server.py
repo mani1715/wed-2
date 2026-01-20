@@ -324,7 +324,7 @@ async def create_profile(profile_data: ProfileCreate, admin_id: str = Depends(ge
     
     # PHASE 12: Create audit log
     await create_audit_log(
-        admin_id=admin['id'],
+        admin_id=admin_id,
         action="profile_created",
         target_id=profile.id,
         details={"slug": slug, "groom": profile_data.groom_name, "bride": profile_data.bride_name}
