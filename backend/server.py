@@ -727,7 +727,7 @@ async def get_invitation(slug: str):
 
 
 @api_router.post("/invite/{slug}/greetings", response_model=GreetingResponse)
-async def submit_greeting(slug: str, greeting_data: GreetingCreate):
+async def submit_greeting(slug: str, greeting_data: GreetingCreate, request: Request):
     """Submit greeting for invitation - PHASE 11: Default status is 'pending' for moderation"""
     profile = await db.profiles.find_one({"slug": slug}, {"_id": 0})
     
@@ -736,6 +736,19 @@ async def submit_greeting(slug: str, greeting_data: GreetingCreate):
     
     if not await check_profile_active(profile):
         raise HTTPException(status_code=410, detail="This invitation link has expired")
+    
+    # PHASE 12: Check rate limit (3 wishes per IP per day)
+    client_ip = request.client.host
+    if not await check_rate_limit(client_ip, "wish", 3):
+        raise HTTPException(status_code=429, detail="Rate limit exceeded. Maximum 3 wishes per day.")
+    
+    # PHASE 12: Check expiry status - disable wishes if expired
+    if profile.get('expires_at'):
+        expires_at = profile['expires_at']
+        if isinstance(expires_at, str):
+            expires_at = datetime.fromisoformat(expires_at)
+        if datetime.now(timezone.utc) > expires_at:
+            raise HTTPException(status_code=403, detail="This invitation has expired. Wishes are no longer accepted.")
     
     # Sanitize input using bleach
     import bleach
