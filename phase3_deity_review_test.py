@@ -19,7 +19,7 @@ import sys
 import os
 
 # Configuration
-BACKEND_URL = "https://blissful-union-4.preview.emergentagent.com/api"
+BACKEND_URL = "https://vows-organizer.preview.emergentagent.com/api"
 ADMIN_EMAIL = "admin@wedding.com"
 ADMIN_PASSWORD = "admin123"
 
