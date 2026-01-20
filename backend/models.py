@@ -221,6 +221,10 @@ class ProfileCreate(BaseModel):
     events: List[WeddingEvent] = Field(default_factory=list)
     link_expiry_type: str = "days"
     link_expiry_value: Optional[int] = 30
+    # PHASE 12: Template & Duplication Support
+    is_template: bool = False
+    template_name: Optional[str] = None
+    expires_at: Optional[datetime] = None
     
     @field_validator('events')
     def validate_events(cls, v):
