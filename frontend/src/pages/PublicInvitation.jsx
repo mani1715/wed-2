@@ -522,12 +522,35 @@ const PublicInvitation = () => {
       {/* Deity Background Layer - Optional, behind all content */}
       <DeityBackground deityId={invitation.deity_id} />
       
+      {/* PHASE 12: Expiry Banner */}
+      {invitation.is_expired && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 100,
+            backgroundColor: '#dc2626',
+            color: 'white',
+            padding: '12px 16px',
+            textAlign: 'center',
+            fontSize: '14px',
+            fontWeight: '600',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+          }}
+        >
+          ⚠️ This invitation has expired. RSVP and wishes submission are disabled.
+        </div>
+      )}
+      
       {/* Main Content - Positioned above deity background */}
       <div 
         className="min-h-screen" 
         style={{ 
           position: 'relative',
           zIndex: 1,
+          paddingTop: invitation.is_expired ? '50px' : '0'
           background: 'var(--color-background, #FFF8E7)',
           fontFamily: 'var(--font-body, "Lora", serif)',
           color: 'var(--color-text, #4A3728)',
