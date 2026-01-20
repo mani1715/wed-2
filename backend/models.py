@@ -722,6 +722,119 @@ class AnalyticsResponse(BaseModel):
     total_views: int
     unique_views: int
     mobile_views: int
+
+
+
+# ==========================================
+# PHASE 12 - SCALABILITY & PRODUCTION MODELS
+# ==========================================
+
+class InvitationTemplate(BaseModel):
+    """Model for reusable invitation templates (admin workflow optimization)"""
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    template_name: str  # Admin-friendly name
+    description: Optional[str] = None  # Template description
+    
+    # Configuration to save (NO personal data)
+    design_id: str
+    deity_id: Optional[str] = None
+    enabled_languages: List[str]
+    sections_enabled: SectionsEnabled
+    background_music: BackgroundMusic  # Only enabled/disabled, not file_url with personal data
+    map_settings: MapSettings
+    contact_info: ContactInfo  # Template structure, admin fills actual contacts
+    events_structure: List[Dict] = Field(default_factory=list)  # Event structure WITHOUT dates/names
+    
+    # Metadata
+    created_by: str  # Admin ID
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    usage_count: int = 0  # Track how many times template was used
+
+
+class InvitationTemplateCreate(BaseModel):
+    """Request model for creating a template from existing profile"""
+    template_name: str
+    description: Optional[str] = None
+    
+    @field_validator('template_name')
+    def validate_template_name(cls, v):
+        """Validate template name is not empty"""
+        if not v or len(v.strip()) == 0:
+            raise ValueError('Template name cannot be empty')
+        if len(v) > 100:
+            raise ValueError('Template name must be 100 characters or less')
+        return v.strip()
+
+
+class InvitationTemplateResponse(BaseModel):
+    """Response model for template data"""
+    id: str
+    template_name: str
+    description: Optional[str]
+    design_id: str
+    deity_id: Optional[str]
+    enabled_languages: List[str]
+    sections_enabled: SectionsEnabled
+    background_music: BackgroundMusic
+    events_structure: List[Dict]
+    created_at: datetime
+    usage_count: int
+
+
+class AuditLog(BaseModel):
+    """Model for tracking admin actions (production debugging & accountability)"""
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    admin_id: str  # Who performed the action
+    action: str  # profile_created, profile_updated, template_saved, profile_duplicated, expiry_set, etc.
+    target_id: Optional[str] = None  # Profile ID or Template ID
+    details: Optional[Dict] = None  # Additional context (e.g., {"from": "old_value", "to": "new_value"})
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class AuditLogResponse(BaseModel):
+    """Response model for audit logs"""
+    id: str
+    admin_id: str
+    action: str
+    target_id: Optional[str]
+    details: Optional[Dict]
+    timestamp: datetime
+
+
+class RateLimitTracker(BaseModel):
+    """Model for IP-based rate limiting (spam prevention)"""
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    ip_address: str  # Client IP address
+    action_type: str  # rsvp, wish
+    count: int = 1  # Number of actions performed
+    date: str  # yyyy-mm-dd format for daily tracking
+    last_action_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    
+    @field_validator('action_type')
+    def validate_action_type(cls, v):
+        """Validate action type"""
+        if v not in ['rsvp', 'wish']:
+            raise ValueError('action_type must be either "rsvp" or "wish"')
+        return v
+
+
+class SetExpiryRequest(BaseModel):
+    """Request model for setting profile expiry"""
+    expires_at: datetime
+    
+    @field_validator('expires_at')
+    def validate_expires_at(cls, v):
+        """Validate expiry date is in the future"""
+        if v <= datetime.now(timezone.utc):
+            raise ValueError('Expiry date must be in the future')
+        return v
+
     desktop_views: int
     tablet_views: int
     first_viewed_at: Optional[datetime]
