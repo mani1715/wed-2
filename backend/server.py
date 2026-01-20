@@ -364,7 +364,7 @@ async def get_profile(profile_id: str, admin_id: str = Depends(get_current_admin
 async def update_profile(
     profile_id: str,
     update_data: ProfileUpdate,
-    admin_id: str = Depends(get_current_admin)
+    admin: dict = Depends(get_current_admin)
 ):
     """Update profile"""
     existing_profile = await db.profiles.find_one({"id": profile_id}, {"_id": 0})
@@ -395,6 +395,8 @@ async def update_profile(
     # Serialize dates
     if 'event_date' in update_dict:
         update_dict['event_date'] = update_dict['event_date'].isoformat()
+    if 'expires_at' in update_dict and update_dict['expires_at']:
+        update_dict['expires_at'] = update_dict['expires_at'].isoformat()
     update_dict['updated_at'] = update_dict['updated_at'].isoformat()
     if 'link_expiry_date' in update_dict and update_dict['link_expiry_date']:
         update_dict['link_expiry_date'] = update_dict['link_expiry_date'].isoformat()
@@ -402,6 +404,14 @@ async def update_profile(
     await db.profiles.update_one(
         {"id": profile_id},
         {"$set": update_dict}
+    )
+    
+    # PHASE 12: Create audit log
+    await create_audit_log(
+        admin_id=admin['id'],
+        action="profile_updated",
+        target_id=profile_id,
+        details={"fields_updated": list(update_dict.keys())}
     )
     
     # Get updated profile
@@ -416,6 +426,8 @@ async def update_profile(
         updated_profile['updated_at'] = datetime.fromisoformat(updated_profile['updated_at'])
     if updated_profile.get('link_expiry_date') and isinstance(updated_profile['link_expiry_date'], str):
         updated_profile['link_expiry_date'] = datetime.fromisoformat(updated_profile['link_expiry_date'])
+    if updated_profile.get('expires_at') and isinstance(updated_profile['expires_at'], str):
+        updated_profile['expires_at'] = datetime.fromisoformat(updated_profile['expires_at'])
     
     updated_profile['invitation_link'] = f"/invite/{updated_profile['slug']}"
     
