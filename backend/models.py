@@ -519,6 +519,8 @@ class InvitationPublicView(BaseModel):
     events: List[WeddingEvent]
     media: List[ProfileMedia]
     greetings: List[GreetingResponse]
+    # PHASE 12: Expiry Status
+    is_expired: bool = False  # Indicates if invitation has expired
 
 
 class RSVP(BaseModel):
