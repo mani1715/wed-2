@@ -251,7 +251,7 @@ async def get_all_profiles(admin_id: str = Depends(get_current_admin)):
 
 
 @api_router.post("/admin/profiles", response_model=ProfileResponse)
-async def create_profile(profile_data: ProfileCreate, admin: dict = Depends(get_current_admin)):
+async def create_profile(profile_data: ProfileCreate, admin_id: str = Depends(get_current_admin)):
     """Create new profile"""
     # Generate unique slug
     slug = generate_slug(profile_data.groom_name, profile_data.bride_name)
