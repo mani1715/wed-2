@@ -1,708 +1,549 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Testing for Events System
-Tests all Events System functionality including:
-- Profile Creation with Events
-- Events Validation (max 7, at least 1 visible)
-- Map Settings
-- Public Invitation API with events
-- Event Sorting
-- Backward Compatibility
+PHASE 12 - EXPIRY & AUTO-DISABLE SYSTEM TESTING
+
+This script tests the expiry system features as requested in the review:
+1. Set Expiry Date API
+2. Check Expired Profile Flag
+3. Active Profile (Not Expired)
+4. RSVP Disabled When Expired
+5. Wishes Disabled When Expired
+6. Default Expiry Calculation
 """
 
 import requests
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+import time
 import sys
-import traceback
+import os
 
-# Configuration
-BASE_URL = "https://wed-management.preview.emergentagent.com/api"
+# Get backend URL from environment
+BACKEND_URL = "https://wed-management.preview.emergentagent.com/api"
+
+# Admin credentials
 ADMIN_EMAIL = "admin@wedding.com"
 ADMIN_PASSWORD = "admin123"
 
-class EventsSystemTester:
+class ExpirySystemTester:
     def __init__(self):
         self.token = None
         self.test_profiles = []
-        self.passed_tests = 0
-        self.total_tests = 0
+        self.test_results = []
         
+    def log_result(self, test_name, success, message, details=None):
+        """Log test result"""
+        status = "✅ PASS" if success else "❌ FAIL"
+        result = {
+            "test": test_name,
+            "success": success,
+            "message": message,
+            "details": details or {}
+        }
+        self.test_results.append(result)
+        print(f"{status}: {test_name} - {message}")
+        if details:
+            for key, value in details.items():
+                print(f"    {key}: {value}")
+        print()
+    
     def authenticate(self):
         """Authenticate as admin"""
-        print("🔐 Authenticating as admin...")
-        
-        response = requests.post(f"{BASE_URL}/auth/login", json={
-            "email": ADMIN_EMAIL,
-            "password": ADMIN_PASSWORD
-        })
-        
-        if response.status_code == 200:
-            data = response.json()
-            self.token = data["access_token"]
-            print(f"✅ Authentication successful")
-            return True
-        else:
-            print(f"❌ Authentication failed: {response.status_code} - {response.text}")
+        try:
+            response = requests.post(f"{BACKEND_URL}/auth/login", json={
+                "email": ADMIN_EMAIL,
+                "password": ADMIN_PASSWORD
+            })
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.token = data["access_token"]
+                self.log_result("Admin Authentication", True, "Successfully authenticated as admin")
+                return True
+            else:
+                self.log_result("Admin Authentication", False, f"Failed to authenticate: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Admin Authentication", False, f"Authentication error: {str(e)}")
             return False
     
     def get_headers(self):
         """Get authorization headers"""
         return {"Authorization": f"Bearer {self.token}"}
     
-    def run_test(self, test_name, test_func):
-        """Run a single test with error handling"""
-        self.total_tests += 1
-        print(f"\n🧪 TEST {self.total_tests}: {test_name}")
+    def create_test_profile(self, groom_name, bride_name, wedding_date, expires_at=None):
+        """Create a test profile"""
+        try:
+            profile_data = {
+                "groom_name": groom_name,
+                "bride_name": bride_name,
+                "event_type": "marriage",
+                "event_date": wedding_date.isoformat(),
+                "venue": "Grand Palace Wedding Hall",
+                "city": "Hyderabad",
+                "invitation_message": "Join us in celebrating our special day",
+                "language": ["english", "telugu"],
+                "design_id": "royal_classic",
+                "deity_id": "ganesha",
+                "whatsapp_groom": "+919876543210",
+                "whatsapp_bride": "+919876543211",
+                "enabled_languages": ["english", "telugu"],
+                "events": [
+                    {
+                        "name": "Wedding Ceremony",
+                        "date": wedding_date.strftime("%Y-%m-%d"),
+                        "start_time": "10:00",
+                        "end_time": "12:00",
+                        "venue_name": "Grand Palace Wedding Hall",
+                        "venue_address": "Banjara Hills, Hyderabad",
+                        "map_link": "https://maps.google.com/example",
+                        "description": "Main wedding ceremony",
+                        "visible": True,
+                        "order": 0
+                    }
+                ],
+                "sections_enabled": {
+                    "opening": True,
+                    "welcome": True,
+                    "couple": True,
+                    "events": True,
+                    "photos": True,
+                    "video": False,
+                    "greetings": True,
+                    "rsvp": True,
+                    "footer": True
+                }
+            }
+            
+            if expires_at:
+                profile_data["expires_at"] = expires_at.isoformat()
+            
+            response = requests.post(
+                f"{BACKEND_URL}/admin/profiles",
+                json=profile_data,
+                headers=self.get_headers()
+            )
+            
+            if response.status_code == 200:
+                profile = response.json()
+                self.test_profiles.append(profile)
+                return profile
+            else:
+                print(f"Failed to create profile: {response.status_code} - {response.text}")
+                return None
+                
+        except Exception as e:
+            print(f"Error creating profile: {str(e)}")
+            return None
+    
+    def test_1_set_expiry_date_api(self):
+        """TEST 1: Set Expiry Date API"""
+        print("🧪 TEST 1: Set Expiry Date API")
+        
+        # Create test profile (Arjun & Meera wedding)
+        wedding_date = datetime.now(timezone.utc) + timedelta(days=30)
+        profile = self.create_test_profile("Arjun Kumar", "Meera Sharma", wedding_date)
+        
+        if not profile:
+            self.log_result("TEST 1 - Profile Creation", False, "Failed to create test profile")
+            return False
+        
+        profile_id = profile["id"]
+        original_expires_at = profile.get("expires_at")
+        
+        # Set expiry date to tomorrow
+        tomorrow = datetime.now(timezone.utc) + timedelta(days=1)
         
         try:
-            result = test_func()
-            if result:
-                self.passed_tests += 1
-                print(f"✅ PASSED: {test_name}")
-            else:
-                print(f"❌ FAILED: {test_name}")
-            return result
-        except Exception as e:
-            print(f"❌ ERROR in {test_name}: {str(e)}")
-            traceback.print_exc()
-            return False
-    
-    def test_profile_creation_with_events(self):
-        """Test 1: Profile Creation with 3 Events (Mehendi, Sangeet, Wedding)"""
-        
-        # Create events data
-        events = [
-            {
-                "name": "Mehendi Ceremony",
-                "date": "2024-02-15",
-                "start_time": "16:00",
-                "end_time": "20:00",
-                "venue_name": "Bride's Home",
-                "venue_address": "123 Garden Street, Mumbai, Maharashtra 400001",
-                "map_link": "https://maps.google.com/?q=123+Garden+Street+Mumbai",
-                "description": "Traditional henna ceremony with music and dance",
-                "visible": True,
-                "order": 1
-            },
-            {
-                "name": "Sangeet Night",
-                "date": "2024-02-16",
-                "start_time": "19:00",
-                "end_time": "23:00",
-                "venue_name": "Grand Ballroom",
-                "venue_address": "456 Palace Road, Mumbai, Maharashtra 400002",
-                "map_link": "https://maps.google.com/?q=456+Palace+Road+Mumbai",
-                "description": "Musical evening with family performances",
-                "visible": True,
-                "order": 2
-            },
-            {
-                "name": "Wedding Ceremony",
-                "date": "2024-02-17",
-                "start_time": "10:00",
-                "end_time": "14:00",
-                "venue_name": "Sacred Temple Hall",
-                "venue_address": "789 Temple Street, Mumbai, Maharashtra 400003",
-                "map_link": "https://maps.google.com/?q=789+Temple+Street+Mumbai",
-                "description": "Sacred wedding rituals and celebrations",
-                "visible": True,
-                "order": 3
-            }
-        ]
-        
-        profile_data = {
-            "groom_name": "Arjun Sharma",
-            "bride_name": "Priya Patel",
-            "event_type": "marriage",
-            "event_date": "2024-02-17T10:00:00",
-            "venue": "Sacred Temple Hall",
-            "language": ["english", "telugu"],
-            "design_id": "royal_classic",
-            "deity_id": "ganesha",
-            "whatsapp_groom": "+919876543210",
-            "whatsapp_bride": "+919876543211",
-            "enabled_languages": ["english", "telugu"],
-            "sections_enabled": {
-                "opening": True,
-                "welcome": True,
-                "couple": True,
-                "photos": True,
-                "video": False,
-                "events": True,
-                "greetings": True,
-                "footer": True
-            },
-            "map_settings": {
-                "embed_enabled": True
-            },
-            "events": events,
-            "link_expiry_type": "days",
-            "link_expiry_value": 30
-        }
-        
-        response = requests.post(
-            f"{BASE_URL}/admin/profiles",
-            json=profile_data,
-            headers=self.get_headers()
-        )
-        
-        if response.status_code == 200:
-            profile = response.json()
-            self.test_profiles.append(profile["id"])
+            response = requests.put(
+                f"{BACKEND_URL}/admin/profiles/{profile_id}/set-expiry",
+                json={"expires_at": tomorrow.isoformat()},
+                headers=self.get_headers()
+            )
             
-            # Verify events are stored correctly
-            if len(profile["events"]) == 3:
-                print(f"   ✓ Created profile with 3 events")
-                print(f"   ✓ Profile ID: {profile['id']}")
-                print(f"   ✓ Slug: {profile['slug']}")
-                print(f"   ✓ Map settings embed_enabled: {profile['map_settings']['embed_enabled']}")
+            if response.status_code == 200:
+                result = response.json()
                 
-                # Verify each event has all required fields
-                for i, event in enumerate(profile["events"]):
-                    expected_name = events[i]["name"]
-                    if event["name"] == expected_name:
-                        print(f"   ✓ Event {i+1}: {event['name']} - All fields present")
+                # Verify the response
+                if "expires_at" in result:
+                    # Get updated profile to verify
+                    profile_response = requests.get(
+                        f"{BACKEND_URL}/admin/profiles/{profile_id}",
+                        headers=self.get_headers()
+                    )
+                    
+                    if profile_response.status_code == 200:
+                        updated_profile = profile_response.json()
+                        updated_expires_at = updated_profile.get("expires_at")
+                        
+                        if updated_expires_at:
+                            self.log_result(
+                                "TEST 1 - Set Expiry Date API", 
+                                True, 
+                                "Successfully set expiry date to tomorrow",
+                                {
+                                    "profile_id": profile_id,
+                                    "original_expires_at": original_expires_at,
+                                    "new_expires_at": updated_expires_at,
+                                    "groom_bride": f"{profile['groom_name']} & {profile['bride_name']}"
+                                }
+                            )
+                            return True
+                        else:
+                            self.log_result("TEST 1 - Set Expiry Date API", False, "expires_at field not updated in profile")
                     else:
-                        print(f"   ❌ Event {i+1}: Name mismatch")
-                        return False
+                        self.log_result("TEST 1 - Set Expiry Date API", False, f"Failed to fetch updated profile: {profile_response.status_code}")
+                else:
+                    self.log_result("TEST 1 - Set Expiry Date API", False, "Response missing expires_at field")
+            else:
+                self.log_result("TEST 1 - Set Expiry Date API", False, f"API call failed: {response.status_code} - {response.text}")
                 
-                return True
-            else:
-                print(f"   ❌ Expected 3 events, got {len(profile['events'])}")
-                return False
-        else:
-            print(f"   ❌ Profile creation failed: {response.status_code} - {response.text}")
-            return False
+        except Exception as e:
+            self.log_result("TEST 1 - Set Expiry Date API", False, f"Exception occurred: {str(e)}")
+        
+        return False
     
-    def test_max_events_validation(self):
-        """Test 2: Events Validation - Max 7 Events Limit"""
+    def test_2_check_expired_profile_flag(self):
+        """TEST 2: Check Expired Profile Flag"""
+        print("🧪 TEST 2: Check Expired Profile Flag")
         
-        # Create 8 events (should fail)
-        events = []
-        for i in range(8):
-            events.append({
-                "name": f"Event {i+1}",
-                "date": f"2024-02-{15+i:02d}",
-                "start_time": "10:00",
-                "end_time": "12:00",
-                "venue_name": f"Venue {i+1}",
-                "venue_address": f"Address {i+1}",
-                "map_link": f"https://maps.google.com/?q=venue{i+1}",
-                "description": f"Description for event {i+1}",
-                "visible": True,
-                "order": i+1
-            })
+        # Create test profile (Karthik & Divya wedding) with past expiry
+        wedding_date = datetime.now(timezone.utc) + timedelta(days=15)
+        yesterday = datetime.now(timezone.utc) - timedelta(days=1)
         
-        profile_data = {
-            "groom_name": "Test Groom",
-            "bride_name": "Test Bride",
-            "event_type": "marriage",
-            "event_date": "2024-02-17T10:00:00",
-            "venue": "Test Venue",
-            "language": ["english"],
-            "enabled_languages": ["english"],
-            "events": events
-        }
+        profile = self.create_test_profile("Karthik Reddy", "Divya Nair", wedding_date, expires_at=yesterday)
         
-        response = requests.post(
-            f"{BASE_URL}/admin/profiles",
-            json=profile_data,
-            headers=self.get_headers()
-        )
-        
-        if response.status_code == 422:
-            error_detail = response.json().get("detail", [])
-            if any("Maximum 7 events allowed" in str(error) for error in error_detail):
-                print(f"   ✓ Correctly rejected 8 events with validation error")
-                return True
-            else:
-                print(f"   ❌ Wrong validation error: {error_detail}")
-                return False
-        else:
-            print(f"   ❌ Expected 422 validation error, got {response.status_code}")
-            return False
-    
-    def test_visible_events_validation(self):
-        """Test 3: Events Validation - At Least 1 Visible Event Required"""
-        
-        # Create events with all visible=false (should fail)
-        events = [
-            {
-                "name": "Hidden Event 1",
-                "date": "2024-02-15",
-                "start_time": "10:00",
-                "end_time": "12:00",
-                "venue_name": "Venue 1",
-                "venue_address": "Address 1",
-                "map_link": "https://maps.google.com/?q=venue1",
-                "description": "Hidden event",
-                "visible": False,
-                "order": 1
-            },
-            {
-                "name": "Hidden Event 2",
-                "date": "2024-02-16",
-                "start_time": "10:00",
-                "end_time": "12:00",
-                "venue_name": "Venue 2",
-                "venue_address": "Address 2",
-                "map_link": "https://maps.google.com/?q=venue2",
-                "description": "Another hidden event",
-                "visible": False,
-                "order": 2
-            }
-        ]
-        
-        profile_data = {
-            "groom_name": "Test Groom 2",
-            "bride_name": "Test Bride 2",
-            "event_type": "marriage",
-            "event_date": "2024-02-17T10:00:00",
-            "venue": "Test Venue",
-            "language": ["english"],
-            "enabled_languages": ["english"],
-            "events": events
-        }
-        
-        response = requests.post(
-            f"{BASE_URL}/admin/profiles",
-            json=profile_data,
-            headers=self.get_headers()
-        )
-        
-        if response.status_code == 422:
-            error_detail = response.json().get("detail", [])
-            if any("At least one event must be visible" in str(error) for error in error_detail):
-                print(f"   ✓ Correctly rejected all hidden events with validation error")
-                return True
-            else:
-                print(f"   ❌ Wrong validation error: {error_detail}")
-                return False
-        else:
-            print(f"   ❌ Expected 422 validation error, got {response.status_code}")
-            return False
-    
-    def test_map_settings_variations(self):
-        """Test 4: Map Settings - embed_enabled true/false and updates"""
-        
-        # Test 1: Create profile with embed_enabled = false
-        profile_data_false = {
-            "groom_name": "Map Test Groom 1",
-            "bride_name": "Map Test Bride 1",
-            "event_type": "marriage",
-            "event_date": "2024-02-17T10:00:00",
-            "venue": "Test Venue",
-            "language": ["english"],
-            "enabled_languages": ["english"],
-            "map_settings": {
-                "embed_enabled": False
-            },
-            "events": [{
-                "name": "Test Event",
-                "date": "2024-02-17",
-                "start_time": "10:00",
-                "venue_name": "Test Venue",
-                "venue_address": "Test Address",
-                "map_link": "https://maps.google.com/?q=test",
-                "visible": True,
-                "order": 1
-            }]
-        }
-        
-        response1 = requests.post(
-            f"{BASE_URL}/admin/profiles",
-            json=profile_data_false,
-            headers=self.get_headers()
-        )
-        
-        if response1.status_code != 200:
-            print(f"   ❌ Failed to create profile with embed_enabled=false: {response1.text}")
+        if not profile:
+            self.log_result("TEST 2 - Profile Creation", False, "Failed to create test profile")
             return False
         
-        profile1 = response1.json()
-        self.test_profiles.append(profile1["id"])
-        
-        if not profile1["map_settings"]["embed_enabled"]:
-            print(f"   ✓ Created profile with embed_enabled=false")
-        else:
-            print(f"   ❌ embed_enabled should be false")
-            return False
-        
-        # Test 2: Create profile with embed_enabled = true
-        profile_data_true = {
-            "groom_name": "Map Test Groom 2",
-            "bride_name": "Map Test Bride 2",
-            "event_type": "marriage",
-            "event_date": "2024-02-17T10:00:00",
-            "venue": "Test Venue",
-            "language": ["english"],
-            "enabled_languages": ["english"],
-            "map_settings": {
-                "embed_enabled": True
-            },
-            "events": [{
-                "name": "Test Event",
-                "date": "2024-02-17",
-                "start_time": "10:00",
-                "venue_name": "Test Venue",
-                "venue_address": "Test Address",
-                "map_link": "https://maps.google.com/?q=test",
-                "visible": True,
-                "order": 1
-            }]
-        }
-        
-        response2 = requests.post(
-            f"{BASE_URL}/admin/profiles",
-            json=profile_data_true,
-            headers=self.get_headers()
-        )
-        
-        if response2.status_code != 200:
-            print(f"   ❌ Failed to create profile with embed_enabled=true: {response2.text}")
-            return False
-        
-        profile2 = response2.json()
-        self.test_profiles.append(profile2["id"])
-        
-        if profile2["map_settings"]["embed_enabled"]:
-            print(f"   ✓ Created profile with embed_enabled=true")
-        else:
-            print(f"   ❌ embed_enabled should be true")
-            return False
-        
-        # Test 3: Update existing profile to toggle embed_enabled
-        update_data = {
-            "map_settings": {
-                "embed_enabled": False
-            }
-        }
-        
-        response3 = requests.put(
-            f"{BASE_URL}/admin/profiles/{profile2['id']}",
-            json=update_data,
-            headers=self.get_headers()
-        )
-        
-        if response3.status_code != 200:
-            print(f"   ❌ Failed to update map_settings: {response3.text}")
-            return False
-        
-        updated_profile = response3.json()
-        
-        if not updated_profile["map_settings"]["embed_enabled"]:
-            print(f"   ✓ Successfully updated embed_enabled from true to false")
-            return True
-        else:
-            print(f"   ❌ embed_enabled should be false after update")
-            return False
-    
-    def test_public_invitation_api_with_events(self):
-        """Test 5: Public Invitation API - Events and Map Settings in Response"""
-        
-        if not self.test_profiles:
-            print(f"   ❌ No test profiles available")
-            return False
-        
-        # Get the first profile (should have 3 events)
-        profile_id = self.test_profiles[0]
-        
-        # First get the profile to get the slug
-        response = requests.get(
-            f"{BASE_URL}/admin/profiles/{profile_id}",
-            headers=self.get_headers()
-        )
-        
-        if response.status_code != 200:
-            print(f"   ❌ Failed to get profile: {response.text}")
-            return False
-        
-        profile = response.json()
         slug = profile["slug"]
         
-        # Test public invitation API
-        public_response = requests.get(f"{BASE_URL}/invite/{slug}")
+        try:
+            # Get public invitation
+            response = requests.get(f"{BACKEND_URL}/invite/{slug}")
+            
+            if response.status_code == 200:
+                invitation_data = response.json()
+                is_expired = invitation_data.get("is_expired", False)
+                
+                if is_expired:
+                    self.log_result(
+                        "TEST 2 - Check Expired Profile Flag", 
+                        True, 
+                        "is_expired field correctly returns true for expired profile",
+                        {
+                            "slug": slug,
+                            "is_expired": is_expired,
+                            "groom_bride": f"{profile['groom_name']} & {profile['bride_name']}",
+                            "profile_data_accessible": "Yes - profile data is still accessible"
+                        }
+                    )
+                    return True
+                else:
+                    self.log_result("TEST 2 - Check Expired Profile Flag", False, f"is_expired field is {is_expired}, expected True")
+            else:
+                self.log_result("TEST 2 - Check Expired Profile Flag", False, f"Failed to get public invitation: {response.status_code} - {response.text}")
+                
+        except Exception as e:
+            self.log_result("TEST 2 - Check Expired Profile Flag", False, f"Exception occurred: {str(e)}")
         
-        if public_response.status_code != 200:
-            print(f"   ❌ Public invitation API failed: {public_response.text}")
-            return False
-        
-        public_data = public_response.json()
-        
-        # Verify events array is returned
-        if "events" not in public_data:
-            print(f"   ❌ Events array missing from public API response")
-            return False
-        
-        if len(public_data["events"]) != 3:
-            print(f"   ❌ Expected 3 events, got {len(public_data['events'])}")
-            return False
-        
-        print(f"   ✓ Public API returns events array with {len(public_data['events'])} events")
-        
-        # Verify map_settings is included
-        if "map_settings" not in public_data:
-            print(f"   ❌ map_settings missing from public API response")
-            return False
-        
-        if "embed_enabled" not in public_data["map_settings"]:
-            print(f"   ❌ embed_enabled missing from map_settings")
-            return False
-        
-        print(f"   ✓ Public API includes map_settings with embed_enabled: {public_data['map_settings']['embed_enabled']}")
-        
-        # Verify all event fields are present
-        required_fields = ["event_id", "name", "date", "start_time", "venue_name", "venue_address", "map_link", "visible", "order"]
-        
-        for i, event in enumerate(public_data["events"]):
-            for field in required_fields:
-                if field not in event:
-                    print(f"   ❌ Event {i+1} missing field: {field}")
-                    return False
-        
-        print(f"   ✓ All events have required fields")
-        
-        # Verify only visible events are considered for display
-        visible_events = [e for e in public_data["events"] if e["visible"]]
-        if len(visible_events) != 3:  # All our test events are visible
-            print(f"   ❌ Expected 3 visible events, got {len(visible_events)}")
-            return False
-        
-        print(f"   ✓ Visible events filter working correctly")
-        
-        return True
+        return False
     
-    def test_event_sorting(self):
-        """Test 6: Event Sorting by Date and Start Time"""
+    def test_3_active_profile_not_expired(self):
+        """TEST 3: Active Profile (Not Expired)"""
+        print("🧪 TEST 3: Active Profile (Not Expired)")
         
-        # Create profile with events in random order
-        events = [
-            {
-                "name": "Evening Reception",
-                "date": "2024-02-17",  # Same day, later time
-                "start_time": "18:00",
-                "end_time": "22:00",
-                "venue_name": "Reception Hall",
-                "venue_address": "Reception Address",
-                "map_link": "https://maps.google.com/?q=reception",
-                "description": "Evening reception",
-                "visible": True,
-                "order": 3
-            },
-            {
-                "name": "Morning Wedding",
-                "date": "2024-02-17",  # Same day, earlier time
-                "start_time": "10:00",
-                "end_time": "14:00",
-                "venue_name": "Temple",
-                "venue_address": "Temple Address",
-                "map_link": "https://maps.google.com/?q=temple",
-                "description": "Wedding ceremony",
-                "visible": True,
-                "order": 2
-            },
-            {
-                "name": "Pre-Wedding Mehendi",
-                "date": "2024-02-16",  # Earlier day
-                "start_time": "16:00",
-                "end_time": "20:00",
-                "venue_name": "Home",
-                "venue_address": "Home Address",
-                "map_link": "https://maps.google.com/?q=home",
-                "description": "Mehendi ceremony",
-                "visible": True,
-                "order": 1
+        # Create test profile (Rahul & Anjali wedding) with future expiry
+        wedding_date = datetime.now(timezone.utc) + timedelta(days=20)
+        future_expiry = datetime.now(timezone.utc) + timedelta(days=7)
+        
+        profile = self.create_test_profile("Rahul Gupta", "Anjali Singh", wedding_date, expires_at=future_expiry)
+        
+        if not profile:
+            self.log_result("TEST 3 - Profile Creation", False, "Failed to create test profile")
+            return False
+        
+        slug = profile["slug"]
+        
+        try:
+            # Get public invitation
+            response = requests.get(f"{BACKEND_URL}/invite/{slug}")
+            
+            if response.status_code == 200:
+                invitation_data = response.json()
+                is_expired = invitation_data.get("is_expired", True)  # Default to True to catch missing field
+                
+                if not is_expired:
+                    self.log_result(
+                        "TEST 3 - Active Profile (Not Expired)", 
+                        True, 
+                        "is_expired field correctly returns false for active profile",
+                        {
+                            "slug": slug,
+                            "is_expired": is_expired,
+                            "groom_bride": f"{profile['groom_name']} & {profile['bride_name']}",
+                            "profile_data_accessible": "Yes - profile data is fully accessible"
+                        }
+                    )
+                    return True
+                else:
+                    self.log_result("TEST 3 - Active Profile (Not Expired)", False, f"is_expired field is {is_expired}, expected False")
+            else:
+                self.log_result("TEST 3 - Active Profile (Not Expired)", False, f"Failed to get public invitation: {response.status_code} - {response.text}")
+                
+        except Exception as e:
+            self.log_result("TEST 3 - Active Profile (Not Expired)", False, f"Exception occurred: {str(e)}")
+        
+        return False
+    
+    def test_4_rsvp_disabled_when_expired(self):
+        """TEST 4: RSVP Disabled When Expired"""
+        print("🧪 TEST 4: RSVP Disabled When Expired")
+        
+        # Use the expired profile from TEST 2 if available
+        expired_profile = None
+        for profile in self.test_profiles:
+            if "Karthik" in profile.get("groom_name", ""):
+                expired_profile = profile
+                break
+        
+        if not expired_profile:
+            # Create a new expired profile
+            wedding_date = datetime.now(timezone.utc) + timedelta(days=10)
+            yesterday = datetime.now(timezone.utc) - timedelta(days=1)
+            expired_profile = self.create_test_profile("Karthik Reddy", "Divya Nair", wedding_date, expires_at=yesterday)
+        
+        if not expired_profile:
+            self.log_result("TEST 4 - Profile Setup", False, "Failed to get/create expired profile")
+            return False
+        
+        slug = expired_profile["slug"]
+        
+        try:
+            # Try to submit RSVP
+            rsvp_data = {
+                "guest_name": "Rajesh Kumar",
+                "guest_phone": "+919876543212",
+                "status": "yes",
+                "guest_count": 2,
+                "message": "Looking forward to the celebration!"
             }
-        ]
-        
-        profile_data = {
-            "groom_name": "Sorting Test Groom",
-            "bride_name": "Sorting Test Bride",
-            "event_type": "marriage",
-            "event_date": "2024-02-17T10:00:00",
-            "venue": "Test Venue",
-            "language": ["english"],
-            "enabled_languages": ["english"],
-            "events": events
-        }
-        
-        response = requests.post(
-            f"{BASE_URL}/admin/profiles",
-            json=profile_data,
-            headers=self.get_headers()
-        )
-        
-        if response.status_code != 200:
-            print(f"   ❌ Failed to create profile for sorting test: {response.text}")
-            return False
-        
-        profile = response.json()
-        self.test_profiles.append(profile["id"])
-        
-        # Test public API to verify sorting
-        public_response = requests.get(f"{BASE_URL}/invite/{profile['slug']}")
-        
-        if public_response.status_code != 200:
-            print(f"   ❌ Public API failed: {public_response.text}")
-            return False
-        
-        public_data = public_response.json()
-        events_returned = public_data["events"]
-        
-        # Verify chronological order
-        expected_order = [
-            ("2024-02-16", "16:00", "Pre-Wedding Mehendi"),
-            ("2024-02-17", "10:00", "Morning Wedding"),
-            ("2024-02-17", "18:00", "Evening Reception")
-        ]
-        
-        for i, (expected_date, expected_time, expected_name) in enumerate(expected_order):
-            if i >= len(events_returned):
-                print(f"   ❌ Missing event at position {i}")
-                return False
             
-            event = events_returned[i]
-            if event["date"] != expected_date or event["start_time"] != expected_time:
-                print(f"   ❌ Event {i+1} not in chronological order")
-                print(f"       Expected: {expected_date} {expected_time}")
-                print(f"       Got: {event['date']} {event['start_time']}")
-                return False
+            response = requests.post(f"{BACKEND_URL}/rsvp?slug={slug}", json=rsvp_data)
             
-            if event["name"] != expected_name:
-                print(f"   ❌ Event {i+1} name mismatch: expected {expected_name}, got {event['name']}")
-                return False
+            # Should return error indicating invitation has expired
+            if response.status_code == 403:
+                error_message = response.json().get("detail", "")
+                if "expired" in error_message.lower():
+                    self.log_result(
+                        "TEST 4 - RSVP Disabled When Expired", 
+                        True, 
+                        "RSVP correctly blocked for expired invitation",
+                        {
+                            "slug": slug,
+                            "status_code": response.status_code,
+                            "error_message": error_message,
+                            "groom_bride": f"{expired_profile['groom_name']} & {expired_profile['bride_name']}"
+                        }
+                    )
+                    return True
+                else:
+                    self.log_result("TEST 4 - RSVP Disabled When Expired", False, f"Wrong error message: {error_message}")
+            else:
+                self.log_result("TEST 4 - RSVP Disabled When Expired", False, f"Unexpected response: {response.status_code} - {response.text}")
+                
+        except Exception as e:
+            self.log_result("TEST 4 - RSVP Disabled When Expired", False, f"Exception occurred: {str(e)}")
         
-        print(f"   ✓ Events returned in correct chronological order")
-        print(f"   ✓ Order: {' → '.join([f'{e[2]} ({e[0]} {e[1]})' for e in expected_order])}")
-        
-        return True
+        return False
     
-    def test_backward_compatibility(self):
-        """Test 7: Backward Compatibility - Profile without Events"""
+    def test_5_wishes_disabled_when_expired(self):
+        """TEST 5: Wishes Disabled When Expired"""
+        print("🧪 TEST 5: Wishes Disabled When Expired")
         
-        # Create profile without events array (empty)
-        profile_data = {
-            "groom_name": "Legacy Groom",
-            "bride_name": "Legacy Bride",
-            "event_type": "marriage",
-            "event_date": "2024-02-17T10:00:00",
-            "venue": "Legacy Venue",
-            "language": ["english"],
-            "enabled_languages": ["english"],
-            "events": []  # Empty events array
-        }
+        # Use the expired profile from TEST 2 if available
+        expired_profile = None
+        for profile in self.test_profiles:
+            if "Karthik" in profile.get("groom_name", ""):
+                expired_profile = profile
+                break
         
-        response = requests.post(
-            f"{BASE_URL}/admin/profiles",
-            json=profile_data,
-            headers=self.get_headers()
-        )
+        if not expired_profile:
+            # Create a new expired profile
+            wedding_date = datetime.now(timezone.utc) + timedelta(days=10)
+            yesterday = datetime.now(timezone.utc) - timedelta(days=1)
+            expired_profile = self.create_test_profile("Karthik Reddy", "Divya Nair", wedding_date, expires_at=yesterday)
         
-        if response.status_code != 200:
-            print(f"   ❌ Failed to create profile without events: {response.text}")
+        if not expired_profile:
+            self.log_result("TEST 5 - Profile Setup", False, "Failed to get/create expired profile")
             return False
         
-        profile = response.json()
-        self.test_profiles.append(profile["id"])
+        slug = expired_profile["slug"]
         
-        # Verify profile was created successfully
-        if len(profile["events"]) != 0:
-            print(f"   ❌ Expected empty events array, got {len(profile['events'])} events")
+        try:
+            # Try to submit greeting/wish
+            greeting_data = {
+                "guest_name": "Priya Sharma",
+                "message": "Wishing you both a lifetime of happiness and love!"
+            }
+            
+            response = requests.post(f"{BACKEND_URL}/invite/{slug}/greetings", json=greeting_data)
+            
+            # Should return error indicating invitation has expired
+            if response.status_code == 403:
+                error_message = response.json().get("detail", "")
+                if "expired" in error_message.lower():
+                    self.log_result(
+                        "TEST 5 - Wishes Disabled When Expired", 
+                        True, 
+                        "Greeting submission correctly blocked for expired invitation",
+                        {
+                            "slug": slug,
+                            "status_code": response.status_code,
+                            "error_message": error_message,
+                            "groom_bride": f"{expired_profile['groom_name']} & {expired_profile['bride_name']}"
+                        }
+                    )
+                    return True
+                else:
+                    self.log_result("TEST 5 - Wishes Disabled When Expired", False, f"Wrong error message: {error_message}")
+            else:
+                self.log_result("TEST 5 - Wishes Disabled When Expired", False, f"Unexpected response: {response.status_code} - {response.text}")
+                
+        except Exception as e:
+            self.log_result("TEST 5 - Wishes Disabled When Expired", False, f"Exception occurred: {str(e)}")
+        
+        return False
+    
+    def test_6_default_expiry_calculation(self):
+        """TEST 6: Default Expiry Calculation"""
+        print("🧪 TEST 6: Default Expiry Calculation")
+        
+        # Create profile with specific wedding date
+        wedding_date = datetime(2025, 3, 15, 10, 0, 0, tzinfo=timezone.utc)
+        expected_expiry = datetime(2025, 3, 22, 10, 0, 0, tzinfo=timezone.utc)  # wedding_date + 7 days
+        
+        profile = self.create_test_profile("Vikram Patel", "Sneha Joshi", wedding_date)
+        
+        if not profile:
+            self.log_result("TEST 6 - Profile Creation", False, "Failed to create test profile")
             return False
         
-        print(f"   ✓ Profile created successfully with empty events array")
+        try:
+            # Check if expires_at is automatically set to wedding_date + 7 days
+            expires_at_str = profile.get("expires_at")
+            
+            if expires_at_str:
+                expires_at = datetime.fromisoformat(expires_at_str.replace('Z', '+00:00'))
+                
+                # Check if it's approximately wedding_date + 7 days (allow some tolerance)
+                time_diff = abs((expires_at - expected_expiry).total_seconds())
+                
+                if time_diff < 3600:  # Within 1 hour tolerance
+                    self.log_result(
+                        "TEST 6 - Default Expiry Calculation", 
+                        True, 
+                        "Default expiry correctly set to wedding_date + 7 days",
+                        {
+                            "wedding_date": wedding_date.isoformat(),
+                            "expected_expiry": expected_expiry.isoformat(),
+                            "actual_expiry": expires_at.isoformat(),
+                            "groom_bride": f"{profile['groom_name']} & {profile['bride_name']}",
+                            "time_difference_seconds": time_diff
+                        }
+                    )
+                    return True
+                else:
+                    self.log_result("TEST 6 - Default Expiry Calculation", False, f"Expiry date mismatch. Expected: {expected_expiry}, Got: {expires_at}")
+            else:
+                self.log_result("TEST 6 - Default Expiry Calculation", False, "expires_at field is missing from profile")
+                
+        except Exception as e:
+            self.log_result("TEST 6 - Default Expiry Calculation", False, f"Exception occurred: {str(e)}")
         
-        # Test public API with empty events
-        public_response = requests.get(f"{BASE_URL}/invite/{profile['slug']}")
-        
-        if public_response.status_code != 200:
-            print(f"   ❌ Public API failed for profile without events: {public_response.text}")
-            return False
-        
-        public_data = public_response.json()
-        
-        # Verify events field exists and is empty
-        if "events" not in public_data:
-            print(f"   ❌ Events field missing from public API")
-            return False
-        
-        if len(public_data["events"]) != 0:
-            print(f"   ❌ Expected empty events array in public API, got {len(public_data['events'])}")
-            return False
-        
-        print(f"   ✓ Public API works correctly with empty events array")
-        print(f"   ✓ Backward compatibility maintained")
-        
-        return True
+        return False
     
     def cleanup_test_profiles(self):
         """Clean up test profiles"""
-        print(f"\n🧹 Cleaning up {len(self.test_profiles)} test profiles...")
+        print("🧹 Cleaning up test profiles...")
         
-        for profile_id in self.test_profiles:
+        for profile in self.test_profiles:
             try:
                 response = requests.delete(
-                    f"{BASE_URL}/admin/profiles/{profile_id}",
+                    f"{BACKEND_URL}/admin/profiles/{profile['id']}",
                     headers=self.get_headers()
                 )
                 if response.status_code == 200:
-                    print(f"   ✓ Deleted profile {profile_id}")
+                    print(f"✅ Deleted profile: {profile['groom_name']} & {profile['bride_name']}")
                 else:
-                    print(f"   ⚠️ Failed to delete profile {profile_id}: {response.status_code}")
+                    print(f"❌ Failed to delete profile: {profile['id']}")
             except Exception as e:
-                print(f"   ⚠️ Error deleting profile {profile_id}: {str(e)}")
+                print(f"❌ Error deleting profile {profile['id']}: {str(e)}")
     
     def run_all_tests(self):
-        """Run all Events System tests"""
-        print("🚀 Starting Events System Backend Testing")
-        print("=" * 60)
+        """Run all expiry system tests"""
+        print("🚀 Starting PHASE 12 - EXPIRY & AUTO-DISABLE SYSTEM TESTING")
+        print("=" * 70)
         
+        # Authenticate first
         if not self.authenticate():
+            print("❌ Authentication failed. Cannot proceed with tests.")
             return False
         
         # Run all tests
         tests = [
-            ("Profile Creation with 3 Events (Mehendi, Sangeet, Wedding)", self.test_profile_creation_with_events),
-            ("Events Validation - Max 7 Events Limit", self.test_max_events_validation),
-            ("Events Validation - At Least 1 Visible Event Required", self.test_visible_events_validation),
-            ("Map Settings - embed_enabled Variations and Updates", self.test_map_settings_variations),
-            ("Public Invitation API - Events and Map Settings Response", self.test_public_invitation_api_with_events),
-            ("Event Sorting - Chronological Order by Date and Time", self.test_event_sorting),
-            ("Backward Compatibility - Profile without Events", self.test_backward_compatibility)
+            self.test_1_set_expiry_date_api,
+            self.test_2_check_expired_profile_flag,
+            self.test_3_active_profile_not_expired,
+            self.test_4_rsvp_disabled_when_expired,
+            self.test_5_wishes_disabled_when_expired,
+            self.test_6_default_expiry_calculation
         ]
         
-        for test_name, test_func in tests:
-            self.run_test(test_name, test_func)
+        passed_tests = 0
+        total_tests = len(tests)
+        
+        for test_func in tests:
+            try:
+                if test_func():
+                    passed_tests += 1
+                time.sleep(1)  # Small delay between tests
+            except Exception as e:
+                print(f"❌ Test {test_func.__name__} failed with exception: {str(e)}")
+        
+        # Print summary
+        print("=" * 70)
+        print("📊 TEST SUMMARY")
+        print("=" * 70)
+        
+        for result in self.test_results:
+            status = "✅ PASS" if result["success"] else "❌ FAIL"
+            print(f"{status}: {result['test']}")
+        
+        print(f"\n🎯 OVERALL RESULT: {passed_tests}/{total_tests} tests passed")
+        
+        if passed_tests == total_tests:
+            print("🎉 ALL TESTS PASSED! Expiry system is working correctly.")
+        else:
+            print(f"⚠️  {total_tests - passed_tests} test(s) failed. Please review the issues above.")
         
         # Cleanup
         self.cleanup_test_profiles()
         
-        # Summary
-        print("\n" + "=" * 60)
-        print("📊 EVENTS SYSTEM TESTING SUMMARY")
-        print("=" * 60)
-        print(f"✅ Passed: {self.passed_tests}/{self.total_tests} tests")
-        print(f"❌ Failed: {self.total_tests - self.passed_tests}/{self.total_tests} tests")
-        
-        if self.passed_tests == self.total_tests:
-            print("🎉 ALL EVENTS SYSTEM TESTS PASSED!")
-            print("✅ Events System is production-ready")
-            return True
-        else:
-            print("⚠️ Some tests failed - Events System needs attention")
-            return False
+        return passed_tests == total_tests
 
 def main():
     """Main function"""
-    tester = EventsSystemTester()
+    tester = ExpirySystemTester()
     success = tester.run_all_tests()
     
     if success:
-        print("\n🎯 EVENTS SYSTEM BACKEND TESTING COMPLETE - ALL TESTS PASSED!")
+        print("\n✅ All expiry system tests completed successfully!")
         sys.exit(0)
     else:
-        print("\n❌ EVENTS SYSTEM BACKEND TESTING FAILED")
+        print("\n❌ Some tests failed. Please check the output above.")
         sys.exit(1)
 
 if __name__ == "__main__":
